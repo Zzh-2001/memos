@@ -74,7 +74,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     }
 
     if (isInMemoDetailPage) {
-      navigateTo(memo.state === State.ARCHIVED ? "/" : "/archived");
+      navigateTo(memo.state === State.ARCHIVED ? "/home" : "/archived");
     }
     memoUpdatedCallback();
   }, [memo.name, memo.state, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, updateMemo]);
@@ -109,7 +109,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
       queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
     }
     if (isInMemoDetailPage) {
-      navigateTo("/");
+      navigateTo("/home");
     }
     memoUpdatedCallback();
   }, [memo.name, memo.parent, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo, queryClient]);

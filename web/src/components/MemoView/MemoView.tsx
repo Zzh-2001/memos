@@ -21,7 +21,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const creator = useUser(memoData.creator).data;
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
-  const parentPage = parentPageProp || "/";
+  const parentPage = parentPageProp || "/home";
 
   // NSFW content management: always blur content tagged with NSFW (case-insensitive)
   const [showNSFWContent, setShowNSFWContent] = useState(false);

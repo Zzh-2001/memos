@@ -1,4 +1,4 @@
-import { ArchiveIcon, CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
+import { CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -109,10 +109,6 @@ const UserMenu = (props: Props) => {
         <DropdownMenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
           <SquareUserIcon className="size-4 text-muted-foreground" />
           {t("common.profile")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigateTo(Routes.ARCHIVED)}>
-          <ArchiveIcon className="size-4 text-muted-foreground" />
-          {t("common.archived")}
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>

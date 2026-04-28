@@ -98,7 +98,7 @@ const AuthCallback = () => {
         });
         await initialize();
         // Redirect to return URL if specified, otherwise home
-        navigateTo(returnUrl || "/");
+        navigateTo(returnUrl || "/explore");
       } catch (error: unknown) {
         handleError(error, () => {}, {
           fallbackMessage: "Failed to authenticate.",

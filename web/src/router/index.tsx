@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "@/App";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
@@ -46,7 +46,8 @@ const router = createBrowserRouter([
           {
             element: <MainLayout />,
             children: [
-              { path: "", element: <Home /> },
+              { path: "", element: <Navigate to={Routes.EXPLORE} replace /> },
+              { path: "home", element: <Home /> },
               { path: Routes.EXPLORE, element: <Explore /> },
               { path: Routes.ARCHIVED, element: <Archived /> },
               { path: "u/:username", element: <UserProfile /> },

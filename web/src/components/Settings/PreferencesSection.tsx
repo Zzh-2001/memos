@@ -13,8 +13,6 @@ import VisibilityIcon from "../VisibilityIcon";
 import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
-import WebhookSection from "./WebhookSection";
-
 const PreferencesSection = () => {
   const t = useTranslate();
   const { currentUser, userGeneralSetting: generalSetting, refetchSettings } = useAuth();
@@ -63,8 +61,8 @@ const PreferencesSection = () => {
   const setting: UserSetting_GeneralSetting =
     generalSetting ||
     create(UserSetting_GeneralSettingSchema, {
-      locale: "en",
-      memoVisibility: "PRIVATE",
+      locale: "zh-Hans",
+      memoVisibility: "PUBLIC",
       theme: "system",
     });
 
@@ -82,7 +80,7 @@ const PreferencesSection = () => {
 
       <SettingGroup title={t("setting.preference")} showSeparator>
         <SettingRow label={t("setting.preference-section.default-memo-visibility")}>
-          <Select value={setting.memoVisibility || "PRIVATE"} onValueChange={handleDefaultMemoVisibilityChanged}>
+          <Select value={setting.memoVisibility || "PUBLIC"} onValueChange={handleDefaultMemoVisibilityChanged}>
             <SelectTrigger className="min-w-fit">
               <div className="flex items-center gap-2">
                 <VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />
@@ -90,7 +88,7 @@ const PreferencesSection = () => {
               </div>
             </SelectTrigger>
             <SelectContent>
-              {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
+              {[Visibility.PRIVATE, Visibility.PUBLIC]
                 .map((v) => convertVisibilityToString(v))
                 .map((item) => (
                   <SelectItem key={item} value={item} className="whitespace-nowrap">
@@ -102,9 +100,6 @@ const PreferencesSection = () => {
         </SettingRow>
       </SettingGroup>
 
-      <SettingGroup showSeparator>
-        <WebhookSection />
-      </SettingGroup>
     </SettingSection>
   );
 };

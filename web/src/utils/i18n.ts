@@ -47,7 +47,7 @@ export const findNearestMatchedLanguage = (language: string): Locale => {
     }
   }
 
-  // should be "en", so the selector is not empty if there isn't a translation for current user's language
+  // should be "zh-Hans", so the selector is not empty if there isn't a translation for current user's language
   return (i18n.store.options.fallbackLng as FallbackLngObjList).default[0] as Locale;
 };
 

@@ -72,7 +72,7 @@ const SignUp = () => {
       await initAuth();
       // Refetch instance profile to update the initialized status
       await initInstance();
-      navigateTo("/");
+      navigateTo("/explore");
     } catch (error: unknown) {
       handleError(error, toast.error, {
         fallbackMessage: "Sign up failed",

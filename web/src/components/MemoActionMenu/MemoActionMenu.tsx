@@ -1,6 +1,4 @@
 import {
-  ArchiveIcon,
-  ArchiveRestoreIcon,
   BookmarkMinusIcon,
   BookmarkPlusIcon,
   CopyIcon,
@@ -100,14 +98,6 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
         {/* Write actions (non-readonly) */}
         {!readonly && (
           <>
-            {/* Archive/Restore (non-comment) */}
-            {!isComment && (
-              <DropdownMenuItem onClick={handleToggleMemoStatusClick}>
-                {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
-                {isArchived ? t("common.restore") : t("common.archive")}
-              </DropdownMenuItem>
-            )}
-
             {/* Delete */}
             <DropdownMenuItem onClick={handleDeleteMemoClick}>
               <TrashIcon className="w-4 h-auto" />

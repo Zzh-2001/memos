@@ -29,7 +29,7 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
       return {
         search: true,
         statistics: true,
-        shortcuts: false, // Global explore doesn't use shortcuts
+        shortcuts: false,
         tags: true,
       };
     case "archived":
@@ -51,7 +51,7 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
       return {
         search: true,
         statistics: true,
-        shortcuts: true,
+        shortcuts: false,
         tags: true,
       };
   }

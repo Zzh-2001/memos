@@ -22,6 +22,6 @@ export const convertVisibilityToString = (visibility: Visibility) => {
     case Visibility.PRIVATE:
       return "PRIVATE";
     default:
-      return "PRIVATE";
+      return "PUBLIC";
   }
 };

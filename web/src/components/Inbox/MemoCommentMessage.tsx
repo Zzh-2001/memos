@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
-import { CheckIcon, MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
+import { MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import UserAvatar from "@/components/UserAvatar";
@@ -174,23 +174,13 @@ function MemoCommentMessage({ notification }: Props) {
               </span>
             </div>
             <div className="flex items-center gap-1 shrink-0">
-              {isUnread ? (
-                <button
-                  onClick={() => handleArchiveMessage()}
-                  className="p-1.5 hover:bg-primary/10 rounded-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
-                  title={t("common.archive")}
-                >
-                  <CheckIcon className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" strokeWidth={2} />
-                </button>
-              ) : (
-                <button
-                  onClick={handleDeleteMessage}
-                  className="p-1.5 hover:bg-destructive/10 rounded-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
-                  title={t("common.delete")}
-                >
-                  <TrashIcon className="w-4 h-4 text-muted-foreground hover:text-destructive transition-colors" strokeWidth={2} />
-                </button>
-              )}
+              <button
+                onClick={handleDeleteMessage}
+                className="p-1.5 hover:bg-destructive/10 rounded-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
+                title={t("common.delete")}
+              >
+                <TrashIcon className="w-4 h-4 text-muted-foreground hover:text-destructive transition-colors" strokeWidth={2} />
+              </button>
             </div>
           </div>
 

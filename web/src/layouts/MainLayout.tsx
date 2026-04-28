@@ -19,9 +19,8 @@ const MainLayout = () => {
 
   // Determine context based on current route
   const context: MemoExplorerContext = useMemo(() => {
-    if (location.pathname === Routes.ROOT) return "home";
+    if (location.pathname === Routes.HOME) return "home";
     if (location.pathname === Routes.EXPLORE) return "explore";
-    if (matchPath("/archived", location.pathname)) return "archived";
     if (matchPath("/u/:username", location.pathname)) return "profile";
     return "home"; // fallback
   }, [location.pathname]);
@@ -52,7 +51,7 @@ const MainLayout = () => {
   // Determine which user name to use for per-user stats.
   // - home: current user's stats
   // - profile: viewed user's stats
-  // - archived/explore: no user scope (each handled differently inside the hook)
+  // - explore: no user scope (each handled differently inside the hook)
   const statsUserName = useMemo(() => {
     if (context === "home") return currentUser?.name;
     if (context === "profile") return profileUserName;

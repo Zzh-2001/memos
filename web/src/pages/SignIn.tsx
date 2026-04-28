@@ -25,7 +25,7 @@ const SignIn = () => {
   // Redirect to root page if already signed in.
   useEffect(() => {
     if (currentUser?.name) {
-      window.location.href = Routes.ROOT;
+      window.location.href = Routes.EXPLORE;
     }
   }, [currentUser]);
 

@@ -2,6 +2,7 @@ import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { Routes } from "@/router";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -29,7 +30,7 @@ const Explore = () => {
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showCreator showVisibility compact />}
+      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} parentPage={Routes.EXPLORE} showCreator showVisibility compact />}
       listSort={listSort}
       orderBy={orderBy}
       filter={memoFilter}

@@ -1,6 +1,6 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { sortBy } from "lodash-es";
-import { ArchiveIcon, BellIcon, InboxIcon } from "lucide-react";
+import { BellIcon, InboxIcon } from "lucide-react";
 import { useState } from "react";
 import Empty from "@/components/Empty";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
@@ -14,7 +14,7 @@ import { useTranslate } from "@/utils/i18n";
 const Inboxes = () => {
   const t = useTranslate();
   const md = useMediaQuery("md");
-  const [filter, setFilter] = useState<"all" | "unread" | "archived">("all");
+  const [filter, setFilter] = useState<"all" | "unread">("all");
 
   // Fetch notifications with React Query
   const { data: fetchedNotifications = [] } = useNotifications();
@@ -25,12 +25,11 @@ const Inboxes = () => {
 
   const notifications = allNotifications.filter((notification) => {
     if (filter === "unread") return notification.status === UserNotification_Status.UNREAD;
-    if (filter === "archived") return notification.status === UserNotification_Status.ARCHIVED;
     return true;
   });
 
   const unreadCount = allNotifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
-  const archivedCount = allNotifications.filter((n) => n.status === UserNotification_Status.ARCHIVED).length;
+
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
@@ -78,18 +77,7 @@ const Inboxes = () => {
                 <InboxIcon className="w-3.5 h-auto" />
                 {t("inbox.unread")} ({unreadCount})
               </button>
-              <button
-                onClick={() => setFilter("archived")}
-                className={cn(
-                  "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-                  filter === "archived"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50",
-                )}
-              >
-                <ArchiveIcon className="w-3.5 h-auto" />
-                {t("common.archived")} ({archivedCount})
-              </button>
+
             </div>
           </div>
 
@@ -99,7 +87,7 @@ const Inboxes = () => {
               <div className="w-full py-16 flex flex-col justify-center items-center">
                 <Empty />
                 <p className="mt-4 text-sm text-muted-foreground">
-                  {filter === "unread" ? t("inbox.no-unread") : filter === "archived" ? t("inbox.no-archived") : t("message.no-data")}
+                  {filter === "unread" ? t("inbox.no-unread") : t("message.no-data")}
                 </p>
               </div>
             ) : (

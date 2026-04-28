@@ -1,4 +1,4 @@
-import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
+import { BellIcon, EarthIcon, LibraryIcon, UserCircleIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -30,7 +30,7 @@ const Navigation = (props: Props) => {
 
   const homeNavLink: NavLinkItem = {
     id: "header-memos",
-    path: Routes.ROOT,
+    path: Routes.HOME,
     title: t("common.memos"),
     icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
   };
@@ -39,12 +39,6 @@ const Navigation = (props: Props) => {
     path: Routes.EXPLORE,
     title: t("common.explore"),
     icon: <EarthIcon className="w-6 h-auto shrink-0" />,
-  };
-  const attachmentsNavLink: NavLinkItem = {
-    id: "header-attachments",
-    path: Routes.ATTACHMENTS,
-    title: t("common.attachments"),
-    icon: <PaperclipIcon className="w-6 h-auto shrink-0" />,
   };
   const unreadCount = notifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
   const inboxNavLink: NavLinkItem = {
@@ -70,13 +64,13 @@ const Navigation = (props: Props) => {
   };
 
   const navLinks: NavLinkItem[] = currentUser
-    ? [homeNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
+    ? [exploreNavLink, homeNavLink, inboxNavLink]
     : [exploreNavLink, signInNavLink];
 
   return (
     <header className={cn("w-full h-full overflow-auto flex flex-col justify-between items-start gap-4", className)}>
       <div className="w-full px-1 py-1 flex flex-col justify-start items-start space-y-2 overflow-auto overflow-x-hidden shrink">
-        <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.ROOT : Routes.EXPLORE}>
+        <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.EXPLORE : Routes.AUTH}>
           <MemosLogo collapsed={collapsed} />
         </NavLink>
         {navLinks.map((navLink) => (
