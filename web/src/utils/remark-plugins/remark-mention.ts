@@ -32,7 +32,7 @@ export function parseMentionsFromText(text: string): Segment[] {
       const username = chars.slice(i + 1, j).join("");
       const hasLetterOrNumber = [...username].some((char) => /[A-Za-z0-9]/.test(char));
       if (username && hasLetterOrNumber) {
-        segments.push({ type: "mention", value: username.toLowerCase() });
+        segments.push({ type: "mention", value: username });
         i = j;
         continue;
       }

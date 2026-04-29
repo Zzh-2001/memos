@@ -42,7 +42,7 @@ function getMentionUsername(node: Element, children?: React.ReactNode): string {
 
   const text = Array.isArray(children) ? children.join("") : children;
   if (typeof text === "string" && text.startsWith("@")) {
-    return text.slice(1).toLowerCase();
+    return text.slice(1);
   }
 
   return "";
