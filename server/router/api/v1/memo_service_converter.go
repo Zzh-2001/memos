@@ -284,6 +284,99 @@ func (s *APIV1Service) batchConvertMemoRelations(ctx context.Context, memos []*s
 		}
 	}
 
+	// Include nested comment relations so that comment counts reflect total nested comments.
+	commentType := store.MemoRelationComment
+	commentToOriginal := make(map[int32]int32)
+	for _, r := range allRelations {
+		if r.Type == commentType && memoIDSet[r.RelatedMemoID] {
+			commentToOriginal[r.MemoID] = r.RelatedMemoID
+		}
+	}
+
+	currentIDs := make([]int32, 0, len(commentToOriginal))
+	for id := range commentToOriginal {
+		currentIDs = append(currentIDs, id)
+	}
+
+	nestedRelations := make(map[int32][]*store.MemoRelation)
+
+	for len(currentIDs) > 0 {
+		relations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
+			RelatedMemoIDList: currentIDs,
+			Type:              &commentType,
+			MemoFilter:        &memoFilter,
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to list nested comment relations")
+		}
+		if len(relations) == 0 {
+			break
+		}
+
+		nextIDs := make([]int32, 0, len(relations))
+		for _, r := range relations {
+			if originalID, ok := commentToOriginal[r.RelatedMemoID]; ok {
+				commentToOriginal[r.MemoID] = originalID
+				nestedRelations[originalID] = append(nestedRelations[originalID], r)
+			}
+			nextIDs = append(nextIDs, r.MemoID)
+		}
+
+		currentIDs = nextIDs
+	}
+
+	// Batch fetch nested comment memo details.
+	nestedMemoIDSet := make(map[int32]bool)
+	for _, relations := range nestedRelations {
+		for _, r := range relations {
+			nestedMemoIDSet[r.MemoID] = true
+		}
+	}
+	if len(nestedMemoIDSet) > 0 {
+		nestedMemoIDs := make([]int32, 0, len(nestedMemoIDSet))
+		for id := range nestedMemoIDSet {
+			nestedMemoIDs = append(nestedMemoIDs, id)
+		}
+		extraFind := &store.FindMemo{IDList: nestedMemoIDs, ExcludeContent: !includeSnippets}
+		extraMemos, err := s.Store.ListMemos(ctx, extraFind)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to batch fetch nested comment memos")
+		}
+		for _, m := range extraMemos {
+			memoIDToUID[m.ID] = m.UID
+			if includeSnippets {
+				snippet, err := s.getMemoContentSnippet(m.Content)
+				if err != nil {
+					return nil, errors.Wrap(err, "failed to get nested comment memo content snippet")
+				}
+				memoIDToSnippet[m.ID] = snippet
+			}
+		}
+	}
+
+	// Add nested comment relations to the result.
+	for originalID, relations := range nestedRelations {
+		for _, r := range relations {
+			memoUID, ok1 := memoIDToUID[r.MemoID]
+			relatedUID, ok2 := memoIDToUID[originalID]
+			if !ok1 || !ok2 {
+				continue
+			}
+			relation := &v1pb.MemoRelation{
+				Memo: &v1pb.MemoRelation_Memo{
+					Name:    fmt.Sprintf("%s%s", MemoNamePrefix, memoUID),
+					Snippet: memoIDToSnippet[r.MemoID],
+				},
+				RelatedMemo: &v1pb.MemoRelation_Memo{
+					Name:    fmt.Sprintf("%s%s", MemoNamePrefix, relatedUID),
+					Snippet: memoIDToSnippet[originalID],
+				},
+				Type: v1pb.MemoRelation_COMMENT,
+			}
+			result[originalID] = append(result[originalID], relation)
+		}
+	}
+
 	return result, nil
 }
 
@@ -362,6 +455,8 @@ func convertVisibilityFromStore(visibility store.Visibility) v1pb.Visibility {
 
 func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 	switch visibility {
+	case v1pb.Visibility_PRIVATE:
+		return store.Private
 	case v1pb.Visibility_PROTECTED:
 		return store.Protected
 	case v1pb.Visibility_PUBLIC:

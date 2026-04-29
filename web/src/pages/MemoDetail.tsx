@@ -18,9 +18,16 @@ import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 const MemoDetail = () => {
   const md = useMediaQuery("md");
   const [shareImageDialogOpen, setShareImageDialogOpen] = useState(false);
+  const [showCommentEditor, setShowCommentEditor] = useState(false);
   const params = useParams();
   const location = useLocation();
   const { state: locationState, hash } = location;
+
+  useEffect(() => {
+    if (locationState?.openCommentEditor) {
+      setShowCommentEditor(true);
+    }
+  }, [locationState]);
 
   // Detect share mode from the route parameter.
   const shareToken = params.token;
@@ -109,8 +116,15 @@ const MemoDetail = () => {
               showVisibility
               showPinned
               onShareImageDialogOpenChange={setShareImageDialogOpen}
+              onOpenCommentEditor={() => setShowCommentEditor(true)}
             />
-            <MemoCommentSection memo={displayMemo} comments={comments} parentPage={locationState?.from} />
+            <MemoCommentSection
+              memo={displayMemo}
+              comments={comments}
+              parentPage={locationState?.from}
+              showEditor={showCommentEditor}
+              onShowEditorChange={setShowCommentEditor}
+            />
           </div>
           {md && (
             <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">

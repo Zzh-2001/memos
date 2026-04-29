@@ -244,6 +244,9 @@ message Memo {
   // Optional. The location of the memo.
   optional Location location = 18 [(google.api.field_behavior) = OPTIONAL];
 
+  // Output only. The total number of comments including nested comments.
+  int32 comment_count = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
+
   // Computed properties of a memo.
   message Property {
     bool has_link = 1;

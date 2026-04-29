@@ -1,4 +1,4 @@
-import { BookmarkIcon } from "lucide-react";
+import { BookmarkIcon, MessageCircleIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -21,13 +21,21 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
-  const { memo, creator, currentUser, parentPage, readonly, openEditor } = useMemoViewContext();
-  const { displayTime: memoDisplayTime, relativeTimeFormat } = useMemoViewDerived();
+  const { memo, creator, currentUser, parentPage, readonly, openEditor, openCommentEditor } = useMemoViewContext();
+  const { displayTime: memoDisplayTime, relativeTimeFormat, commentAmount, isInMemoDetailPage } = useMemoViewDerived();
 
   const navigateTo = useNavigateTo();
   const handleGotoMemoDetailPage = useCallback(() => {
     navigateTo(`/${memo.name}`, { state: { from: parentPage } });
   }, [memo.name, parentPage, navigateTo]);
+
+  const handleCommentClick = useCallback(() => {
+    if (isInMemoDetailPage && openCommentEditor) {
+      openCommentEditor();
+    } else {
+      navigateTo(`/${memo.name}`, { state: { from: parentPage, openCommentEditor: true } });
+    }
+  }, [isInMemoDetailPage, openCommentEditor, memo.name, parentPage, navigateTo]);
 
   const { unpinMemo } = useMemoActions(memo);
 
@@ -66,6 +74,15 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
             </TooltipContent>
           </Tooltip>
         )}
+
+        <button
+          type="button"
+          className="flex flex-row justify-center items-center gap-0.5 text-xs text-muted-foreground hover:opacity-80 transition-colors cursor-pointer"
+          onClick={handleCommentClick}
+        >
+          <MessageCircleIcon className="w-4 h-auto" />
+          {commentAmount > 0 && <span>{commentAmount}</span>}
+        </button>
 
         {showPinned && memo.pinned && (
           <TooltipProvider>

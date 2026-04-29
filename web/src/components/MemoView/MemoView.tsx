@@ -17,7 +17,7 @@ import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-  const { memo: memoData, className, parentPage: parentPageProp, compact, showCreator, showVisibility, showPinned } = props;
+  const { memo: memoData, className, parentPage: parentPageProp, compact, showCreator, showVisibility, showPinned, onOpenCommentEditor } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [cardWidth, setCardWidth] = useState(0);
@@ -84,6 +84,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       openEditor,
       toggleBlurVisibility,
       openPreview,
+      openCommentEditor: onOpenCommentEditor,
     }),
     [
       memoData,
@@ -98,6 +99,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       openEditor,
       toggleBlurVisibility,
       openPreview,
+      onOpenCommentEditor,
     ],
   );
 

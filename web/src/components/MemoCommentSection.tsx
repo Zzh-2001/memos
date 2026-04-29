@@ -7,22 +7,31 @@ import { extractMemoIdFromName } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { computeCommentAmount } from "@/components/MemoView/MemoViewContext";
 
 interface Props {
   memo: Memo;
   comments: Memo[];
   parentPage?: string;
+  showEditor?: boolean;
+  onShowEditorChange?: (show: boolean) => void;
 }
 
-const MemoCommentSection = ({ memo, comments, parentPage }: Props) => {
+const MemoCommentSection = ({ memo, comments, parentPage, showEditor: externalShowEditor, onShowEditorChange }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const [showEditor, setShowEditor] = useState(false);
+  const [internalShowEditor, setInternalShowEditor] = useState(false);
+  const showEditor = externalShowEditor !== undefined ? externalShowEditor : internalShowEditor;
+
+  const handleSetShowEditor = (value: boolean) => {
+    setInternalShowEditor(value);
+    onShowEditorChange?.(value);
+  };
 
   const showCreateButton = currentUser && !showEditor;
 
   const handleCommentCreated = async (_memoCommentName: string) => {
-    setShowEditor(false);
+    handleSetShowEditor(false);
   };
 
   return (
@@ -34,7 +43,7 @@ const MemoCommentSection = ({ memo, comments, parentPage }: Props) => {
         {comments.length === 0 ? (
           showCreateButton && (
             <div className="w-full flex flex-row justify-center items-center py-6">
-              <Button variant="ghost" onClick={() => setShowEditor(true)}>
+              <Button variant="ghost" onClick={() => handleSetShowEditor(true)}>
                 <span className="text-muted-foreground">{t("memo.comment.write-a-comment")}</span>
                 <MessageCircleIcon className="ml-2 w-5 h-auto text-muted-foreground" />
               </Button>
@@ -45,10 +54,10 @@ const MemoCommentSection = ({ memo, comments, parentPage }: Props) => {
             <div className="flex flex-row justify-start items-center">
               <MessageCircleIcon className="w-5 h-auto text-muted-foreground mr-1" />
               <span className="text-muted-foreground text-sm">{t("memo.comment.self")}</span>
-              <span className="text-muted-foreground text-sm ml-1">({comments.length})</span>
+              <span className="text-muted-foreground text-sm ml-1">({computeCommentAmount(memo)})</span>
             </div>
             {showCreateButton && (
-              <Button variant="ghost" className="text-muted-foreground" onClick={() => setShowEditor(true)}>
+              <Button variant="ghost" className="text-muted-foreground" onClick={() => handleSetShowEditor(true)}>
                 {t("memo.comment.write-a-comment")}
               </Button>
             )}
@@ -62,7 +71,7 @@ const MemoCommentSection = ({ memo, comments, parentPage }: Props) => {
               parentMemoName={memo.name}
               autoFocus
               onConfirm={handleCommentCreated}
-              onCancel={() => setShowEditor(false)}
+              onCancel={() => handleSetShowEditor(false)}
             />
           </div>
         )}

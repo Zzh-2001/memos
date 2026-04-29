@@ -76,7 +76,7 @@ export const formatReactionTooltip = (users: User[], reactionType: string): stri
   if (users.length === 0) return "";
   const formatUserName = (user: User) => user.displayName || user.username;
   if (users.length < 5) {
-    return `${users.map(formatUserName).join(", ")} reacted with ${reactionType.toLowerCase()}`;
+    return `${users.map(formatUserName).join(", ")} 回应了 ${reactionType}`;
   }
-  return `${users.slice(0, 4).map(formatUserName).join(", ")} and ${users.length - 4} more reacted with ${reactionType.toLowerCase()}`;
+  return `${users.slice(0, 4).map(formatUserName).join(", ")} 及其他 ${users.length - 4} 人 回应了 ${reactionType}`;
 };
