@@ -1,4 +1,4 @@
-import { ArrowUpRightIcon, FileIcon } from "lucide-react";
+import { ArrowUpRightIcon, FileIcon, MessageCircleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import UserAvatar from "@/components/UserAvatar";
 import { extractMemoIdFromName } from "@/helpers/resource-names";
@@ -6,7 +6,7 @@ import { useMemoComments } from "@/hooks/useMemoQueries";
 import { useUsersByNames } from "@/hooks/useUserQueries";
 import { countLogicalAttachmentItems } from "@/utils/media-item";
 import { useTranslate } from "@/utils/i18n";
-import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
+import { computeCommentAmount, useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 
 const MemoCommentListView: React.FC = () => {
   const t = useTranslate();
@@ -40,6 +40,7 @@ const MemoCommentListView: React.FC = () => {
         const content = comment.snippet || comment.content;
         const hasContent = content.trim().length > 0;
         const hasAttachments = comment.attachments.length > 0;
+        const childCommentCount = computeCommentAmount(comment);
         return (
           <Link
             key={comment.name}
@@ -67,6 +68,12 @@ const MemoCommentListView: React.FC = () => {
                   </span>
                 )}
               </div>
+              {childCommentCount > 0 && (
+                <div className="shrink-0 flex items-center gap-0.5 text-xs text-muted-foreground/70 ml-1 mt-0.5">
+                  <MessageCircleIcon className="w-3 h-3" />
+                  <span>{childCommentCount}</span>
+                </div>
+              )}
             </div>
           </Link>
         );
