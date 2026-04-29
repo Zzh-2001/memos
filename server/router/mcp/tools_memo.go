@@ -155,7 +155,7 @@ func parseVisibility(s string) (store.Visibility, error) {
 	case store.Public, store.Protected, store.Private:
 		return v, nil
 	default:
-		return "", errors.Errorf("visibility must be PRIVATE, PROTECTED, or PUBLIC; got %q", s)
+		return "", errors.Errorf("visibility must be PRIVATE or PUBLIC; got %q", s)
 	}
 }
 
@@ -203,8 +203,8 @@ func (s *MCPService) registerMemoTools(mcpSrv *mcpserver.MCPServer) {
 		createToolOptions("Create memo", "Create a new memo. Requires authentication.", false,
 			mcp.WithString("content", mcp.Required(), mcp.Description("Memo content in Markdown. Use #tag syntax for tagging.")),
 			mcp.WithString("visibility",
-				mcp.Enum("PRIVATE", "PROTECTED", "PUBLIC"),
-				mcp.Description("Visibility (default: PRIVATE)"),
+				mcp.Enum("PRIVATE", "PUBLIC"),
+				mcp.Description("Visibility (default: PUBLIC)"),
 			),
 			mcp.WithOutputSchema[memoJSON](),
 		)...,
@@ -215,7 +215,7 @@ func (s *MCPService) registerMemoTools(mcpSrv *mcpserver.MCPServer) {
 			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
 			mcp.WithString("content", mcp.Description("New Markdown content")),
 			mcp.WithString("visibility",
-				mcp.Enum("PRIVATE", "PROTECTED", "PUBLIC"),
+				mcp.Enum("PRIVATE", "PUBLIC"),
 				mcp.Description("New visibility"),
 			),
 			mcp.WithBoolean("pinned", mcp.Description("Pin or unpin the memo")),
@@ -358,7 +358,7 @@ func (s *MCPService) handleCreateMemo(ctx context.Context, req mcp.CallToolReque
 	if content == "" {
 		return mcp.NewToolResultError("content is required"), nil
 	}
-	visibility, err := parseVisibility(req.GetString("visibility", "PRIVATE"))
+	visibility, err := parseVisibility(req.GetString("visibility", "PUBLIC"))
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}

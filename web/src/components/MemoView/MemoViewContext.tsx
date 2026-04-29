@@ -37,7 +37,7 @@ export const computeCommentAmount = (memo: Memo): number =>
   memo.relations.filter((r) => r.type === MemoRelation_Type.COMMENT && r.relatedMemo?.name === memo.name).length;
 
 export const useMemoViewDerived = () => {
-  const { memo, isArchived, readonly } = useMemoViewContext();
+  const { memo, readonly } = useMemoViewContext();
   const { timeBasis } = useView();
   const location = useLocation();
 
@@ -50,7 +50,7 @@ export const useMemoViewDerived = () => {
     displayTime && Date.now() - displayTime.getTime() > RELATIVE_TIME_THRESHOLD_MS ? "datetime" : "auto";
 
   return {
-    isArchived,
+    isArchived: false,
     readonly,
     isInMemoDetailPage,
     commentAmount,

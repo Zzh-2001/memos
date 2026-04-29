@@ -64,7 +64,7 @@ export type EditorAction =
 export const initialState: EditorState = {
   content: "",
   metadata: {
-    visibility: Visibility.PRIVATE,
+    visibility: Visibility.PUBLIC,
     attachments: [],
     relations: [],
     location: undefined,

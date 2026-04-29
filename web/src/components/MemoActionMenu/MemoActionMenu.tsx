@@ -1,6 +1,4 @@
 import {
-  ArchiveIcon,
-  ArchiveRestoreIcon,
   BookmarkMinusIcon,
   BookmarkPlusIcon,
   CopyIcon,
@@ -22,7 +20,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { State } from "@/types/proto/api/v1/common_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useMemoActionHandlers } from "./hooks";
 import type { MemoActionMenuProps } from "./types";
@@ -36,13 +33,12 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
 
   // Derived state
   const isComment = Boolean(memo.parent);
-  const isArchived = memo.state === State.ARCHIVED;
 
   // Action handlers
   const {
     handleTogglePinMemoBtnClick,
     handleEditMemoClick,
-    handleToggleMemoStatusClick,
+
     handleCopyLink,
     handleCopyContent,
     handleDeleteMemoClick,
@@ -61,8 +57,8 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={2}>
-        {/* Edit actions (non-readonly, non-archived) */}
-        {!readonly && !isArchived && (
+        {/* Edit actions (non-readonly) */}
+        {!readonly && (
           <>
             {!isComment && (
               <DropdownMenuItem onClick={handleTogglePinMemoBtnClick}>
@@ -77,8 +73,8 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
           </>
         )}
 
-        {/* Copy submenu (non-archived) */}
-        {!isArchived && (
+        {/* Copy submenu */}
+        
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <CopyIcon className="w-4 h-auto" />
@@ -95,19 +91,10 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-        )}
 
         {/* Write actions (non-readonly) */}
         {!readonly && (
           <>
-            {/* Archive/Restore (non-comment) */}
-            {!isComment && (
-              <DropdownMenuItem onClick={handleToggleMemoStatusClick}>
-                {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
-                {isArchived ? t("common.restore") : t("common.archive")}
-              </DropdownMenuItem>
-            )}
-
             {/* Delete */}
             <DropdownMenuItem onClick={handleDeleteMemoClick}>
               <TrashIcon className="w-4 h-auto" />

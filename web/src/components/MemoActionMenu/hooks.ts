@@ -8,9 +8,8 @@ import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { ROUTES } from "@/router/routes";
-import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
 interface UseMemoActionHandlersOptions {
@@ -52,34 +51,6 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     onEdit?.();
   }, [onEdit]);
 
-  const handleToggleMemoStatusClick = useCallback(async () => {
-    const isArchiving = memo.state !== State.ARCHIVED;
-    const state = memo.state === State.ARCHIVED ? State.NORMAL : State.ARCHIVED;
-    const message = memo.state === State.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
-
-    try {
-      await updateMemo({
-        update: {
-          name: memo.name,
-          state,
-        },
-        updateMask: ["state"],
-      });
-      toast.success(message);
-    } catch (error: unknown) {
-      handleError(error, toast.error, {
-        context: `${isArchiving ? "Archive" : "Restore"} memo`,
-        fallbackMessage: "An error occurred",
-      });
-      return;
-    }
-
-    if (isInMemoDetailPage) {
-      navigateTo(memo.state === State.ARCHIVED ? ROUTES.HOME : ROUTES.ARCHIVED);
-    }
-    memoUpdatedCallback();
-  }, [memo.name, memo.state, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, updateMemo]);
-
   const handleCopyLink = useCallback(() => {
     let host = profile.instanceUrl;
     if (host === "") {
@@ -110,7 +81,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
       queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
     }
     if (isInMemoDetailPage) {
-      navigateTo(ROUTES.HOME);
+      navigateTo(ROUTES.EXPLORE);
     }
     memoUpdatedCallback();
   }, [memo.name, memo.parent, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo, queryClient]);
@@ -118,7 +89,6 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
   return {
     handleTogglePinMemoBtnClick,
     handleEditMemoClick,
-    handleToggleMemoStatusClick,
     handleCopyLink,
     handleCopyContent,
     handleDeleteMemoClick,

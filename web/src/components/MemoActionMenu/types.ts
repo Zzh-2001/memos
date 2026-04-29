@@ -10,7 +10,6 @@ export interface MemoActionMenuProps {
 export interface UseMemoActionHandlersReturn {
   handleTogglePinMemoBtnClick: () => Promise<void>;
   handleEditMemoClick: () => void;
-  handleToggleMemoStatusClick: () => Promise<void>;
   handleCopyLink: () => void;
   handleCopyContent: () => void;
   handleDeleteMemoClick: () => void;

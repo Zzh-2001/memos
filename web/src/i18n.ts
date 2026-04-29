@@ -4,37 +4,13 @@ import { initReactI18next } from "react-i18next";
 import { findNearestMatchedLanguage } from "./utils/i18n";
 
 export const locales = orderBy([
-  "ar",
-  "ca",
-  "cs",
   "de",
   "en",
-  "en-GB",
   "es",
-  "fa",
   "fr",
-  "gl",
-  "hi",
-  "hr",
-  "hu",
-  "id",
-  "it",
   "ja",
-  "ka-GE",
   "ko",
-  "mr",
-  "nb",
-  "nl",
-  "pl",
-  "pt-PT",
-  "pt-BR",
   "ru",
-  "sl",
-  "sv",
-  "th",
-  "tr",
-  "uk",
-  "vi",
   "zh-Hans",
   "zh-Hant",
 ]);
@@ -78,7 +54,7 @@ i18n
     },
     fallbackLng: {
       ...fallbacks,
-      ...{ default: ["en"] },
+      ...{ default: ["zh-Hans"] },
     } as FallbackLng,
   });
 

@@ -17,7 +17,7 @@ func visibilityToProto(visibility store.Visibility) v1pb.Visibility {
 	case store.Public:
 		return v1pb.Visibility_PUBLIC
 	default:
-		return v1pb.Visibility_PRIVATE
+		return v1pb.Visibility_PUBLIC
 	}
 }
 

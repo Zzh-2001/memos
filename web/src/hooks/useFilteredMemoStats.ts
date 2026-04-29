@@ -32,7 +32,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
   // ListMemos AND's the request filter with the server's auth filter, so private
   // memos are always excluded regardless of backend version.
   // other contexts: fetch with default params for the fallback memo-based path.
-  const exploreVisibilityFilter = currentUser != null ? 'visibility in ["PUBLIC", "PROTECTED"]' : 'visibility in ["PUBLIC"]';
+  const exploreVisibilityFilter = 'visibility in ["PUBLIC"]';
   const memoQueryParams = context === "explore" ? { filter: exploreVisibilityFilter, pageSize: 1000 } : {};
   const { data: memosResponse, isLoading: isLoadingMemos } = useMemos(memoQueryParams);
 

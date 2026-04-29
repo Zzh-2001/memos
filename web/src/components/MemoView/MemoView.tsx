@@ -5,7 +5,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
 import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
-import { State } from "@/types/proto/api/v1/common_pb";
+
 import { isSuperUser } from "@/utils/user";
 import MemoShareImageDialog from "../MemoActionMenu/MemoShareImageDialog";
 import MemoEditor from "../MemoEditor";
@@ -25,8 +25,8 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const currentUser = useCurrentUser();
   const { tagsSetting } = useInstance();
   const creator = useUser(memoData.creator).data;
-  const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
+  const isArchived = false;
   const parentPage = parentPageProp || "/";
 
   // Blur content when any tag has blur_content enabled in the instance tag settings.
@@ -77,7 +77,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       currentUser,
       parentPage,
       cardWidth,
-      isArchived,
+      isArchived: false,
       readonly,
       showBlurredContent,
       blurred,

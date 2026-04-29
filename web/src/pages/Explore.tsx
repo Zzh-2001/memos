@@ -9,10 +9,9 @@ const Explore = () => {
   const currentUser = useCurrentUser();
 
   // Determine visibility filter based on authentication status
-  // - Logged-in users: Can see PUBLIC and PROTECTED memos
-  // - Visitors: Can only see PUBLIC memos
+  // - All users: Can only see PUBLIC memos
   // Note: The backend is responsible for filtering stats based on visibility permissions.
-  const visibilities = currentUser ? [Visibility.PUBLIC, Visibility.PROTECTED] : [Visibility.PUBLIC];
+  const visibilities = [Visibility.PUBLIC];
 
   // Build filter using unified hook (no creator scoping for Explore)
   const memoFilter = useMemoFilters({

@@ -21,7 +21,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
-  const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
+  const { memo, creator, currentUser, parentPage, readonly, openEditor } = useMemoViewContext();
   const { displayTime: memoDisplayTime, relativeTimeFormat } = useMemoViewDerived();
 
   const navigateTo = useNavigateTo();
@@ -31,9 +31,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
 
   const { unpinMemo } = useMemoActions(memo);
 
-  const displayTime = isArchived ? (
-    memoDisplayTime?.toLocaleString(i18n.language)
-  ) : (
+  const displayTime = (
     <relative-time datetime={memoDisplayTime?.toISOString()} lang={i18n.language} format={relativeTimeFormat}></relative-time>
   );
 
@@ -48,7 +46,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
       </div>
 
       <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
-        {currentUser && !isArchived && (
+        {currentUser && (
           <ReactionSelector
             className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "block sm:hidden sm:group-hover:block")}
             memo={memo}

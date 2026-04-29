@@ -10,7 +10,7 @@
     "create-your-account": "创建您的账户",
     "host-tip": "您正在注册为站点管理员。",
     "new-password": "新密码",
-    "protected-memo-notice": "此备忘录不是公开的。请先登录后继续。",
+    "protected-memo-notice": "此帖子不是公开的。请先登录后继续。",
     "repeat-new-password": "重复新密码",
     "sign-in-tip": "已有账户？",
     "sign-up-tip": "还没有账户？"
@@ -73,8 +73,8 @@
     "link": "链接",
     "map": "地图",
     "mark": "引用",
-    "memo": "备忘录",
-    "memos": "备忘录",
+    "memo": "帖子",
+    "memos": "帖子",
     "more": "更多",
     "name": "名称",
     "new": "新建",
@@ -134,7 +134,7 @@
     "slash-commands": "按下 `/` 输入命令",
     "insert-menu": {
       "add-location": "添加位置",
-      "link-memo": "链接备忘录",
+      "link-memo": "链接帖子",
       "upload-file": "上传文件"
     },
     "audio-recorder": {
@@ -166,7 +166,7 @@
       "transcribing": "转写中...",
       "trigger": "录制音频",
       "unsupported": "不支持录音",
-      "unsupported-description": "此浏览器无法录制备忘录编辑器中的音频。"
+      "unsupported-description": "此浏览器无法录制帖子编辑器中的音频。"
     }
   },
   "inbox": {
@@ -193,7 +193,7 @@
     "copy-content": "复制内容",
     "copy-link": "复制链接",
     "count-memos-in-date": "{{date}} 有 {{count}} 条 {{memos}}",
-    "delete-confirm": "您确定要删除此条备忘录吗？",
+    "delete-confirm": "您确定要删除此条帖子吗？",
     "delete-confirm-description": "此操作是不可逆的，附件、链接和引用也会被删除。",
     "direction": "排序方式",
     "direction-asc": "正序",
@@ -207,20 +207,20 @@
     },
     "links": "链接",
     "load-more": "加载更多",
-    "no-archived-memos": "没有已归档备忘录。",
-    "no-memos": "无备忘录",
+    "no-archived-memos": "没有已归档帖子。",
+    "no-memos": "无帖子",
     "newest-first": "最新优先",
     "oldest-first": "最早优先",
     "order": "顺序",
     "order-by": "排序",
-    "search-placeholder": "搜索备忘录",
+    "search-placeholder": "搜索帖子",
     "shown-time": "显示时间",
     "show-less": "显示较少",
     "show-more": "查看更多",
     "to-do": "待办",
     "view-detail": "查看详情",
     "visibility": {
-      "disabled": "已禁用公开备忘录",
+      "disabled": "已禁用公开帖子",
       "private": "私有",
       "protected": "工作区",
       "public": "公开"
@@ -258,20 +258,20 @@
       "section-label": "分享",
       "share": "分享",
       "shared-by": "由 {{creator}} 分享",
-      "title": "分享这份备忘录"
+      "title": "分享这份帖子"
     }
   },
   "message": {
     "archived-successfully": "归档成功",
-    "change-memo-created-time": "更改备忘录创建时间",
+    "change-memo-created-time": "更改帖子创建时间",
     "copied": "已复制",
     "deleted-successfully": "成功删除！",
     "description-is-required": "请填写说明",
-    "failed-to-embed-memo": "嵌入备忘录失败",
+    "failed-to-embed-memo": "嵌入帖子失败",
     "fill-all": "请填写所有栏目。",
     "fill-all-required-fields": "请填写所有必填项。",
     "maximum-upload-size-is": "允许的最大上传大小为 {{size}} MiB",
-    "memo-not-found": "找不到备忘录",
+    "memo-not-found": "找不到帖子",
     "new-password-not-match": "新密码不一致。",
     "no-data": "未找到任何数据。",
     "password-changed": "密码已修改",
@@ -285,7 +285,7 @@
   "reference": {
     "add-references": "添加引用",
     "embedded-usage": "作为嵌入内容使用",
-    "no-memos-found": "没有发现备忘录",
+    "no-memos-found": "没有发现帖子",
     "search-placeholder": "搜索内容"
   },
   "resource": {
@@ -316,7 +316,7 @@
     "delete-selected-resources": "删除选中资源",
     "fetching-data": "正在获取数据...",
     "file-drag-drop-prompt": "将您的文件拖放到此处以上传文件",
-    "linked-amount": "链接的备忘录数量",
+    "linked-amount": "链接的帖子数量",
     "no-files-selected": "没有文件被选中",
     "no-resources": "没有资源。",
     "no-unused-resources": "没有可删除的资源",
@@ -382,8 +382,8 @@
       "providers": "Providers"
     },
     "preference": {
-      "default-memo-sort-option": "备忘录显示时间",
-      "default-memo-visibility": "默认备忘录可见性",
+      "default-memo-sort-option": "帖子显示时间",
+      "default-memo-visibility": "默认帖子可见性",
       "theme": "主题",
       "label": "偏好设置"
     },
@@ -549,7 +549,7 @@
       "delete-account": "删除账号",
       "delete-account-description": "永久删除当前账号，并移除它在这个实例中的全部访问权限。此操作无法撤销。",
       "email-note": "可选",
-      "export-memos": "导出备忘录",
+      "export-memos": "导出帖子",
       "nickname-note": "显示在横幅中",
       "openapi-reset": "重置 OpenAPI 密钥（Key）",
       "openapi-sample-post": "您好 #memos 来自 {{url}}",
@@ -572,11 +572,11 @@
     "memo": {
       "content-length-limit": "内容长度限制（字节）",
       "enable-blur-sensitive-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
-      "enable-memo-comments": "启用备忘录评论",
-      "enable-memo-location": "启用备忘录定位",
+      "enable-memo-comments": "启用帖子评论",
+      "enable-memo-location": "启用帖子定位",
       "reactions": "表态",
-      "title": "备忘录相关设置",
-      "label": "备忘录",
+      "title": "帖子相关设置",
+      "label": "帖子",
       "reactions-required": "反应列表不能为空"
     },
     "webhook": {
@@ -602,7 +602,7 @@
     "tags": {
       "label": "标签",
       "title": "标签元数据",
-      "description": "将可选的显示颜色分配给实例范围内的标签，或模糊匹配的备忘录内容。标签名称被视为锚定的正则表达式模式。",
+      "description": "将可选的显示颜色分配给实例范围内的标签，或模糊匹配的帖子内容。标签名称被视为锚定的正则表达式模式。",
       "background-color": "背景颜色",
       "blur-content": "模糊内容",
       "no-tags-configured": "未配置标签元数据。",
@@ -618,7 +618,7 @@
     "all-tags": "全部标签",
     "create-tag": "创建标签",
     "create-tags-guide": "您可以通过输入 “#标签” 创建标签。",
-    "delete-confirm": "您确定要删除此标签吗?所有相关的备忘录将会被归档。",
+    "delete-confirm": "您确定要删除此标签吗?所有相关的帖子将会被归档。",
     "delete-success": "标签删除成功",
     "delete-tag": "删除标签",
     "new-name": "新名称",
@@ -628,10 +628,10 @@
     "rename-error-repeat": "新名称不能与旧名称相同",
     "rename-success": "重命名成功",
     "rename-tag": "重命名",
-    "rename-tip": "您的所有带有此标签的备忘录将被更新。"
+    "rename-tip": "您的所有带有此标签的帖子将被更新。"
   },
   "tooltip": {
-    "link-memo": "链接备忘录",
+    "link-memo": "链接帖子",
     "markdown-menu": "Markdown 菜单",
     "select-location": "位置",
     "select-visibility": "浏览权限",

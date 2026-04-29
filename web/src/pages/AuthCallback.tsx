@@ -121,7 +121,7 @@ const AuthCallback = () => {
         // Defense-in-depth: even though `returnUrl` was sanitized before being
         // stored (see storeOAuthState in SignIn), re-validate on the way out so
         // a corrupted state entry can never be used for an open redirect.
-        navigateTo(getSafeRedirectPath(returnUrl) ?? ROUTES.HOME);
+        navigateTo(getSafeRedirectPath(returnUrl) ?? ROUTES.EXPLORE);
       } catch (error: unknown) {
         handleError(error, () => {}, {
           fallbackMessage: "Failed to authenticate.",

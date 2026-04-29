@@ -10,7 +10,6 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 
-const ARCHIVED_ROUTE = "/archived";
 const PROFILE_ROUTE = "/u/:username";
 const DESKTOP_EXPLORER_WIDTH_CLASS = "w-64";
 const DESKTOP_EXPLORER_CLASS_NAME = cn("sticky top-0 h-svh shrink-0 border-r border-border transition-all", DESKTOP_EXPLORER_WIDTH_CLASS);
@@ -26,7 +25,6 @@ const MainLayout = () => {
   const context: MemoExplorerContext = useMemo(() => {
     if (location.pathname === Routes.HOME) return "home";
     if (location.pathname === Routes.EXPLORE) return "explore";
-    if (matchPath(ARCHIVED_ROUTE, location.pathname)) return "archived";
     if (matchPath(PROFILE_ROUTE, location.pathname)) return "profile";
     return "home"; // fallback
   }, [location.pathname]);
@@ -57,7 +55,7 @@ const MainLayout = () => {
   // Determine which user name to use for per-user stats.
   // - home: current user's stats
   // - profile: viewed user's stats
-  // - archived/explore: no user scope (each handled differently inside the hook)
+  // - explore: no user scope (handled inside the hook)
   const statsUserName = useMemo(() => {
     if (context === "home") return currentUser?.name;
     if (context === "profile") return profileUserName;

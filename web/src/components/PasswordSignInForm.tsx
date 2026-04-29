@@ -64,7 +64,7 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
       await initialize();
-      navigateTo(redirectPath || ROUTES.HOME, { replace: true });
+      navigateTo(redirectPath || ROUTES.EXPLORE, { replace: true });
     } catch (error: unknown) {
       handleError(error, toast.error, {
         fallbackMessage: "Failed to sign in.",

@@ -6,7 +6,7 @@ import StatisticsView from "../StatisticsView";
 import ShortcutsSection from "./ShortcutsSection";
 import TagsSection from "./TagsSection";
 
-export type MemoExplorerContext = "home" | "explore" | "archived" | "profile";
+export type MemoExplorerContext = "home" | "explore" | "profile";
 
 export interface MemoExplorerFeatures {
   search?: boolean;
@@ -32,13 +32,6 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         shortcuts: false, // Global explore doesn't use shortcuts
         tags: true,
       };
-    case "archived":
-      return {
-        search: true,
-        statistics: true,
-        shortcuts: false, // Archived doesn't typically use shortcuts
-        tags: true,
-      };
     case "profile":
       return {
         search: true,
@@ -51,7 +44,7 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
       return {
         search: true,
         statistics: true,
-        shortcuts: true,
+        shortcuts: false, // Shortcuts feature has been removed
         tags: true,
       };
   }

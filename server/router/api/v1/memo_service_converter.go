@@ -367,6 +367,6 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 	case v1pb.Visibility_PUBLIC:
 		return store.Public
 	default:
-		return store.Private
+		return store.Public
 	}
 }

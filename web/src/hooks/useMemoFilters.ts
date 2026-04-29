@@ -8,12 +8,10 @@ const getVisibilityName = (visibility: Visibility): string => {
   switch (visibility) {
     case Visibility.PUBLIC:
       return "PUBLIC";
-    case Visibility.PROTECTED:
-      return "PROTECTED";
     case Visibility.PRIVATE:
       return "PRIVATE";
     default:
-      return "PRIVATE";
+      return "PUBLIC";
   }
 };
 
