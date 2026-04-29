@@ -28,7 +28,7 @@ function MemoMentionMessage({ notification }: Props) {
       updateMask: create(FieldMaskSchema, { paths: ["status"] }),
     });
     if (!silence) {
-      toast.success(t("message.archived-successfully"));
+      toast.success("已标记为已读");
     }
   };
 
@@ -112,7 +112,7 @@ function MemoMentionMessage({ notification }: Props) {
                 <button
                   onClick={() => handleArchiveMessage()}
                   className="p-1.5 hover:bg-primary/10 rounded-lg transition-all duration-150 opacity-0 group-hover:opacity-100"
-                  title={t("common.archive")}
+                  title="标记为已读"
                 >
                   <CheckIcon className="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" strokeWidth={2} />
                 </button>

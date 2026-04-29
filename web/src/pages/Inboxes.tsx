@@ -1,13 +1,17 @@
-import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
+import { useQueryClient } from "@tanstack/react-query";
 import { sortBy } from "lodash-es";
-import { BellIcon, InboxIcon } from "lucide-react";
+import { BellIcon, CheckCheckIcon, InboxIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import Empty from "@/components/Empty";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MemoMentionMessage from "@/components/Inbox/MemoMentionMessage";
 import MobileHeader from "@/components/MobileHeader";
+import { userServiceClient } from "@/connect";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import { useNotifications } from "@/hooks/useUserQueries";
+import { useNotifications, userKeys } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -15,6 +19,7 @@ import { useTranslate } from "@/utils/i18n";
 const Inboxes = () => {
   const t = useTranslate();
   const md = useMediaQuery("md");
+  const queryClient = useQueryClient();
   const [filter, setFilter] = useState<"all" | "unread">("all");
 
   // Fetch notifications with React Query
@@ -31,6 +36,39 @@ const Inboxes = () => {
 
   const unreadCount = allNotifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
 
+  const handleMarkAllAsRead = async () => {
+    const unreadNotifications = allNotifications.filter(
+      (n) => n.status === UserNotification_Status.UNREAD,
+    );
+    if (unreadNotifications.length === 0) return;
+
+    await Promise.all(
+      unreadNotifications.map((n) =>
+        userServiceClient.updateUserNotification({
+          notification: {
+            name: n.name,
+            status: UserNotification_Status.ARCHIVED,
+          },
+          updateMask: create(FieldMaskSchema, { paths: ["status"] }),
+        }),
+      ),
+    );
+
+    await queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
+    toast.success(`已将 ${unreadNotifications.length} 条通知标记为已读`);
+  };
+
+  const handleClearAll = async () => {
+    if (allNotifications.length === 0) return;
+
+    await Promise.all(
+      allNotifications.map((n) => userServiceClient.deleteUserNotification({ name: n.name })),
+    );
+
+    await queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
+    toast.success(`已清除 ${allNotifications.length} 条通知`);
+  };
+
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && <MobileHeader />}
@@ -46,6 +84,28 @@ const Inboxes = () => {
                   <span className="ml-1 px-2 py-0.5 text-xs font-medium rounded-full bg-primary text-primary-foreground">
                     {unreadCount}
                   </span>
+                )}
+              </div>
+              <div className="flex items-center gap-1">
+                {unreadCount > 0 && (
+                  <button
+                    onClick={handleMarkAllAsRead}
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-md transition-colors"
+                    title="一键已读"
+                  >
+                    <CheckCheckIcon className="w-3.5 h-3.5" />
+                    一键已读
+                  </button>
+                )}
+                {allNotifications.length > 0 && (
+                  <button
+                    onClick={handleClearAll}
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+                    title="一键清除"
+                  >
+                    <Trash2Icon className="w-3.5 h-3.5" />
+                    一键清除
+                  </button>
                 )}
               </div>
             </div>
