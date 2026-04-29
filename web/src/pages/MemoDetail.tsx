@@ -57,6 +57,7 @@ const MemoDetail = () => {
 
   const { data: commentsResponse } = useMemoComments(memoName, {
     enabled: !!memo,
+    pageSize: 100,
   });
   const comments = commentsResponse?.memos || [];
 

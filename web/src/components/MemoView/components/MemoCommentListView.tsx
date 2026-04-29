@@ -13,9 +13,10 @@ const MemoCommentListView: React.FC = () => {
   const { memo } = useMemoViewContext();
   const { isInMemoDetailPage, commentAmount } = useMemoViewDerived();
 
-  const { data } = useMemoComments(memo.name, { enabled: !isInMemoDetailPage && commentAmount > 0, pageSize: 3 });
+  const { data } = useMemoComments(memo.name, { enabled: !isInMemoDetailPage && commentAmount > 0, pageSize: 4 });
   const comments = data?.memos ?? [];
   const displayedComments = comments.slice(0, 3);
+  const hasMoreComments = comments.length > 3;
   const { data: commentCreators } = useUsersByNames(displayedComments.map((comment) => comment.creator));
 
   if (isInMemoDetailPage || commentAmount === 0) {
@@ -78,6 +79,16 @@ const MemoCommentListView: React.FC = () => {
           </Link>
         );
       })}
+      {hasMoreComments && (
+        <Link
+          to={`/${memo.name}#comments`}
+          className="mt-1 text-xs text-muted-foreground/70 hover:text-muted-foreground transition-colors flex items-center gap-1"
+        >
+          <span className="w-4 border-t border-muted-foreground/30" />
+          还有 {commentAmount - 3} 条评论
+          <ArrowUpRightIcon className="w-3 h-3" />
+        </Link>
+      )}
     </div>
   );
 };
