@@ -316,6 +316,10 @@ message CreateUserRequest {
   // Optional. An idempotency token that can be used to ensure that multiple
   // requests to create a user have the same result.
   string request_id = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The invite code for registration.
+  // Required when instance has registration_invite_code configured.
+  string invite_code = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message UpdateUserRequest {

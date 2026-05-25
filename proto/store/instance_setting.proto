@@ -63,6 +63,9 @@ message InstanceGeneralSetting {
   bool disallow_change_username = 8;
   // disallow_change_nickname disallows changing nickname.
   bool disallow_change_nickname = 9;
+  // registration_invite_code is the invite code required for user registration.
+  // If empty, no invite code is required.
+  string registration_invite_code = 10;
 }
 
 message InstanceCustomProfile {

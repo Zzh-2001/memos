@@ -1,8 +1,10 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +31,7 @@ const InstanceSection = () => {
   const { generalSetting: originalSetting, profile, updateSetting, fetchSetting } = useInstance();
   const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
+  const [showInviteCode, setShowInviteCode] = useState(false);
 
   useEffect(() => {
     setInstanceGeneralSetting((prev) =>
@@ -117,6 +120,28 @@ const InstanceSection = () => {
             checked={instanceGeneralSetting.disallowUserRegistration}
             onCheckedChange={(checked) => updatePartialSetting({ disallowUserRegistration: checked })}
           />
+        </SettingRow>
+
+        <SettingRow label={t("setting.instance.registration-invite-code")} description={t("setting.instance.registration-invite-code-description")}>
+          <div className="flex flex-row items-center gap-1">
+            <Input
+              className="w-40"
+              type={showInviteCode ? "text" : "password"}
+              disabled={profile.demo}
+              placeholder={t("setting.instance.registration-invite-code-placeholder")}
+              value={instanceGeneralSetting.registrationInviteCode || ""}
+              onChange={(event) => updatePartialSetting({ registrationInviteCode: event.target.value })}
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              disabled={profile.demo}
+              onClick={() => setShowInviteCode(!showInviteCode)}
+            >
+              {showInviteCode ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+            </Button>
+          </div>
         </SettingRow>
 
         <SettingRow label={t("setting.instance.disallow-password-auth")}>

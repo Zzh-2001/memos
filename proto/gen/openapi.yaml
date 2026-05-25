@@ -1229,6 +1229,13 @@ paths:
                      requests to create a user have the same result.
                   schema:
                     type: string
+                - name: inviteCode
+                  in: query
+                  description: |-
+                    Optional. The invite code for registration.
+                     Required when instance has registration_invite_code configured.
+                  schema:
+                    type: string
             requestBody:
                 content:
                     application/json:
@@ -2625,6 +2632,24 @@ components:
                 disallowChangeNickname:
                     type: boolean
                     description: disallow_change_nickname disallows changing nickname.
+                registrationInviteCode:
+                    writeOnly: true
+                    type: string
+                    description: |-
+                        registration_invite_code is the invite code required for registration.
+                         Write-only: never returned in responses.
+                registrationInviteCodeRequired:
+                    readOnly: true
+                    type: boolean
+                    description: |-
+                        registration_invite_code_required indicates whether an invite code is configured.
+                         Read-only: derived from whether registration_invite_code is set.
+                registrationInviteCodeHint:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        registration_invite_code_hint is a masked hint for the stored invite code.
+                         Read-only: shows a masked version of the code so admins can identify it.
             description: General instance settings configuration.
         InstanceSetting_MemoRelatedSetting:
             type: object
@@ -3015,6 +3040,11 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/Location'
                     description: Optional. The location of the memo.
+                commentCount:
+                    readOnly: true
+                    type: integer
+                    description: Output only. The total number of comments including nested comments.
+                    format: int32
         MemoRelation:
             required:
                 - memo

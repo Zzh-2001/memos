@@ -384,4 +384,243 @@ func TestCreateUserRegistration(t *testing.T) {
 		})
 		require.Error(t, err)
 	})
+
+	t.Run("CreateUser blocked when invite code required but not provided", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					RegistrationInviteCode: "secret123",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid invite code")
+	})
+
+	t.Run("CreateUser blocked when wrong invite code provided", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					RegistrationInviteCode: "secret123",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+			InviteCode: "wrongcode",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid invite code")
+	})
+
+	t.Run("CreateUser succeeds with correct invite code", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					RegistrationInviteCode: "secret123",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		createdUser, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+			InviteCode: "secret123",
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createdUser)
+		require.Equal(t, "users/newuser", createdUser.Name)
+	})
+
+	t.Run("CreateUser succeeds without invite code when not configured", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		// No invite code configured, registration should work without one
+		createdUser, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createdUser)
+	})
+
+	t.Run("CreateUser admin bypasses invite code requirement", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		hostCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					RegistrationInviteCode: "secret123",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		// Admin should be able to create users without invite code
+		createdUser, err := ts.Service.CreateUser(hostCtx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, createdUser)
+	})
+
+	t.Run("GetInstanceSetting invite code visibility by role", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					RegistrationInviteCode: "mysecretcode",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		// Unauthenticated request: invite code should not be exposed
+		setting, err := ts.Service.GetInstanceSetting(ctx, &apiv1.GetInstanceSettingRequest{
+			Name: "instance/settings/GENERAL",
+		})
+		require.NoError(t, err)
+		generalSetting := setting.GetGeneralSetting()
+		require.NotNil(t, generalSetting)
+		require.Empty(t, generalSetting.RegistrationInviteCode, "unauthenticated request should not see invite code")
+		require.True(t, generalSetting.RegistrationInviteCodeRequired)
+		require.Contains(t, generalSetting.RegistrationInviteCodeHint, "****")
+
+		// Admin request: invite code should be visible in plaintext
+		adminSetting, err := ts.Service.GetInstanceSetting(adminCtx, &apiv1.GetInstanceSettingRequest{
+			Name: "instance/settings/GENERAL",
+		})
+		require.NoError(t, err)
+		adminGeneralSetting := adminSetting.GetGeneralSetting()
+		require.NotNil(t, adminGeneralSetting)
+		require.Equal(t, "mysecretcode", adminGeneralSetting.RegistrationInviteCode, "admin should see invite code plaintext")
+		require.True(t, adminGeneralSetting.RegistrationInviteCodeRequired)
+		require.Contains(t, adminGeneralSetting.RegistrationInviteCodeHint, "****")
+	})
+
+	t.Run("UpdateInstanceSetting preserves invite code when empty value sent", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		hostCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		// Set invite code
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					RegistrationInviteCode: "secret123",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		// Update general setting WITHOUT providing invite code (empty string)
+		_, err = ts.Service.UpdateInstanceSetting(hostCtx, &apiv1.UpdateInstanceSettingRequest{
+			Setting: &apiv1.InstanceSetting{
+				Name: "instance/settings/GENERAL",
+				Value: &apiv1.InstanceSetting_GeneralSetting_{
+					GeneralSetting: &apiv1.InstanceSetting_GeneralSetting{
+						DisallowChangeUsername: true,
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		// The invite code should still be required (not cleared)
+		setting, err := ts.Service.GetInstanceSetting(ctx, &apiv1.GetInstanceSettingRequest{
+			Name: "instance/settings/GENERAL",
+		})
+		require.NoError(t, err)
+		require.True(t, setting.GetGeneralSetting().RegistrationInviteCodeRequired)
+
+		// And registration should still require the correct invite code
+		_, err = ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid invite code")
+
+		// With correct invite code, should succeed
+		_, err = ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+			InviteCode: "secret123",
+		})
+		require.NoError(t, err)
+	})
 }

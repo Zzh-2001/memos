@@ -10,6 +10,8 @@
   "auth": {
     "create-your-account": "Create your account",
     "host-tip": "You are registering as the Site Host.",
+    "invite-code": "Invite Code",
+    "invite-code-placeholder": "Enter invite code",
     "new-password": "New password",
     "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Repeat the new password",
@@ -167,6 +169,7 @@
       "upload-file": "Upload file"
     },
     "no-changes-detected": "No changes detected",
+    "publish": "Publish",
     "save": "Save",
     "saving": "Saving...",
     "slash-commands": "Type `/` for commands",
@@ -440,6 +443,10 @@
       "disallow-password-auth": "Disallow password auth",
       "disallow-user-registration": "Disallow user registration",
       "monday": "Monday",
+      "registration-invite-code": "Registration Invite Code",
+      "registration-invite-code-description": "Require an invite code for new user registration",
+      "registration-invite-code-placeholder": "Enter invite code",
+      "registration-invite-code-configured": "Configured",
       "saturday": "Saturday",
       "sunday": "Sunday",
       "week-start-day": "Week start day"

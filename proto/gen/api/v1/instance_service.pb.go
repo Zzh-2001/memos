@@ -598,8 +598,17 @@ type InstanceSetting_GeneralSetting struct {
 	DisallowChangeUsername bool `protobuf:"varint,8,opt,name=disallow_change_username,json=disallowChangeUsername,proto3" json:"disallow_change_username,omitempty"`
 	// disallow_change_nickname disallows changing nickname.
 	DisallowChangeNickname bool `protobuf:"varint,9,opt,name=disallow_change_nickname,json=disallowChangeNickname,proto3" json:"disallow_change_nickname,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// registration_invite_code is the invite code required for registration.
+	// Write-only: never returned in responses.
+	RegistrationInviteCode string `protobuf:"bytes,10,opt,name=registration_invite_code,json=registrationInviteCode,proto3" json:"registration_invite_code,omitempty"`
+	// registration_invite_code_required indicates whether an invite code is configured.
+	// Read-only: derived from whether registration_invite_code is set.
+	RegistrationInviteCodeRequired bool `protobuf:"varint,11,opt,name=registration_invite_code_required,json=registrationInviteCodeRequired,proto3" json:"registration_invite_code_required,omitempty"`
+	// registration_invite_code_hint is a masked hint for the stored invite code.
+	// Read-only: shows a masked version of the code so admins can identify it.
+	RegistrationInviteCodeHint string `protobuf:"bytes,12,opt,name=registration_invite_code_hint,json=registrationInviteCodeHint,proto3" json:"registration_invite_code_hint,omitempty"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *InstanceSetting_GeneralSetting) Reset() {
@@ -686,6 +695,27 @@ func (x *InstanceSetting_GeneralSetting) GetDisallowChangeNickname() bool {
 		return x.DisallowChangeNickname
 	}
 	return false
+}
+
+func (x *InstanceSetting_GeneralSetting) GetRegistrationInviteCode() string {
+	if x != nil {
+		return x.RegistrationInviteCode
+	}
+	return ""
+}
+
+func (x *InstanceSetting_GeneralSetting) GetRegistrationInviteCodeRequired() bool {
+	if x != nil {
+		return x.RegistrationInviteCodeRequired
+	}
+	return false
+}
+
+func (x *InstanceSetting_GeneralSetting) GetRegistrationInviteCodeHint() string {
+	if x != nil {
+		return x.RegistrationInviteCodeHint
+	}
+	return ""
 }
 
 // Storage configuration settings for instance attachments.
@@ -1393,7 +1423,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12(\n" +
 	"\x05admin\x18\a \x01(\v2\x12.memos.api.v1.UserR\x05admin\x12\x16\n" +
 	"\x06commit\x18\b \x01(\tR\x06commit\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xe6\x19\n" +
+	"\x19GetInstanceProfileRequest\"\xbd\x1b\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -1402,7 +1432,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\ftags_setting\x18\x05 \x01(\v2).memos.api.v1.InstanceSetting.TagsSettingH\x00R\vtagsSetting\x12f\n" +
 	"\x14notification_setting\x18\x06 \x01(\v21.memos.api.v1.InstanceSetting.NotificationSettingH\x00R\x13notificationSetting\x12H\n" +
 	"\n" +
-	"ai_setting\x18\a \x01(\v2'.memos.api.v1.InstanceSetting.AISettingH\x00R\taiSetting\x1a\xca\x04\n" +
+	"ai_setting\x18\a \x01(\v2'.memos.api.v1.InstanceSetting.AISettingH\x00R\taiSetting\x1a\xa1\x06\n" +
 	"\x0eGeneralSetting\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
 	"\x16disallow_password_auth\x18\x03 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
@@ -1411,7 +1441,11 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x0ecustom_profile\x18\x06 \x01(\v2:.memos.api.v1.InstanceSetting.GeneralSetting.CustomProfileR\rcustomProfile\x121\n" +
 	"\x15week_start_day_offset\x18\a \x01(\x05R\x12weekStartDayOffset\x128\n" +
 	"\x18disallow_change_username\x18\b \x01(\bR\x16disallowChangeUsername\x128\n" +
-	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\x1ab\n" +
+	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\x12=\n" +
+	"\x18registration_invite_code\x18\n" +
+	" \x01(\tB\x03\xe0A\x04R\x16registrationInviteCode\x12N\n" +
+	"!registration_invite_code_required\x18\v \x01(\bB\x03\xe0A\x03R\x1eregistrationInviteCodeRequired\x12F\n" +
+	"\x1dregistration_invite_code_hint\x18\f \x01(\tB\x03\xe0A\x03R\x1aregistrationInviteCodeHint\x1ab\n" +
 	"\rCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +

@@ -25,6 +25,7 @@ const SignUp = () => {
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
   const { initialize: initAuth } = useAuth();
   const { generalSetting: instanceGeneralSetting, profile, initialize: initInstance } = useInstance();
   const [searchParams] = useSearchParams();
@@ -52,6 +53,10 @@ const SignUp = () => {
       return;
     }
 
+    if (instanceGeneralSetting.registrationInviteCodeRequired && inviteCode === "") {
+      return;
+    }
+
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -63,7 +68,7 @@ const SignUp = () => {
         password,
         role: User_Role.USER,
       });
-      await userServiceClient.createUser({ user });
+      await userServiceClient.createUser({ user, inviteCode });
       const response = await authServiceClient.signIn({
         credentials: {
           case: "passwordCredentials",
@@ -129,6 +134,23 @@ const SignUp = () => {
                     required
                   />
                 </div>
+                {instanceGeneralSetting.registrationInviteCodeRequired && (
+                  <div className="w-full flex flex-col justify-start items-start">
+                    <span className="leading-8 text-muted-foreground">{t("auth.invite-code")}</span>
+                    <Input
+                      className="w-full bg-background h-10"
+                      type="text"
+                      readOnly={actionBtnLoadingState.isLoading}
+                      placeholder={t("auth.invite-code-placeholder")}
+                      value={inviteCode}
+                      autoComplete="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
+                      onChange={(e) => setInviteCode(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex flex-row justify-end items-center w-full mt-6">
                 <Button type="submit" className="w-full h-10" disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>

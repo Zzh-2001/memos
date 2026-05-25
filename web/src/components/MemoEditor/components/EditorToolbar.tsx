@@ -49,7 +49,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
         )}
 
         <Button onClick={onSave} disabled={!valid || isSaving}>
-          {isSaving ? t("editor.saving") : t("editor.save")}
+          {isSaving ? t("editor.saving") : memoName ? t("editor.save") : t("editor.publish")}
         </Button>
       </div>
     </div>

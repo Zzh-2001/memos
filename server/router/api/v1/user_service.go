@@ -204,6 +204,12 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 			if instanceGeneralSetting.DisallowPasswordAuth {
 				return nil, status.Errorf(codes.PermissionDenied, "password signup is not allowed")
 			}
+			// Validate invite code if required
+			if instanceGeneralSetting.RegistrationInviteCode != "" {
+				if request.InviteCode != instanceGeneralSetting.RegistrationInviteCode {
+					return nil, status.Errorf(codes.InvalidArgument, "invalid invite code")
+				}
+			}
 		}
 	}
 

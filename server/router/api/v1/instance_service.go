@@ -75,7 +75,8 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		return nil, status.Errorf(codes.NotFound, "instance setting not found")
 	}
 
-	// Storage and notification settings contain credentials; restrict to admins only.
+	// Check admin-only credentials in settings.
+	isAdmin := false
 	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE ||
 		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION {
 		user, err := s.fetchCurrentUser(ctx)
@@ -88,6 +89,7 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		if user.Role != store.RoleAdmin {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
+		isAdmin = true
 	}
 	if instanceSetting.Key == storepb.InstanceSettingKey_AI {
 		user, err := s.fetchCurrentUser(ctx)
@@ -98,8 +100,14 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
 	}
+	if instanceSetting.Key == storepb.InstanceSettingKey_GENERAL {
+		user, _ := s.fetchCurrentUser(ctx)
+		if user != nil && user.Role == store.RoleAdmin {
+			isAdmin = true
+		}
+	}
 
-	return convertInstanceSettingFromStore(instanceSetting), nil
+	return convertInstanceSettingFromStore(instanceSetting, isAdmin), nil
 }
 
 func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.UpdateInstanceSettingRequest) (*v1pb.InstanceSetting, error) {
@@ -126,6 +134,13 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	// Preserve write-only credential fields when the caller sends an empty value.
 	// An empty string means "no change", not "clear the credential".
 	switch updateSetting.Key {
+	case storepb.InstanceSettingKey_GENERAL:
+		if general := updateSetting.GetGeneralSetting(); general != nil && general.RegistrationInviteCode == "" {
+			existing, err := s.Store.GetInstanceGeneralSetting(ctx)
+			if err == nil && existing != nil && existing.RegistrationInviteCode != "" {
+				general.RegistrationInviteCode = existing.RegistrationInviteCode
+			}
+		}
 	case storepb.InstanceSettingKey_NOTIFICATION:
 		if notif := updateSetting.GetNotificationSetting(); notif != nil && notif.Email != nil && notif.Email.SmtpPassword == "" {
 			existing, err := s.Store.GetInstanceNotificationSetting(ctx)
@@ -153,17 +168,17 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 		return nil, status.Errorf(codes.Internal, "failed to upsert instance setting: %v", err)
 	}
 
-	return convertInstanceSettingFromStore(instanceSetting), nil
+	return convertInstanceSettingFromStore(instanceSetting, true), nil
 }
 
-func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *v1pb.InstanceSetting {
+func convertInstanceSettingFromStore(setting *storepb.InstanceSetting, isAdmin bool) *v1pb.InstanceSetting {
 	instanceSetting := &v1pb.InstanceSetting{
 		Name: fmt.Sprintf("instance/settings/%s", setting.Key.String()),
 	}
 	switch setting.Value.(type) {
 	case *storepb.InstanceSetting_GeneralSetting:
 		instanceSetting.Value = &v1pb.InstanceSetting_GeneralSetting_{
-			GeneralSetting: convertInstanceGeneralSettingFromStore(setting.GetGeneralSetting()),
+			GeneralSetting: convertInstanceGeneralSettingFromStore(setting.GetGeneralSetting(), isAdmin),
 		}
 	case *storepb.InstanceSetting_StorageSetting:
 		instanceSetting.Value = &v1pb.InstanceSetting_StorageSetting_{
@@ -230,19 +245,24 @@ func convertInstanceSettingToStore(setting *v1pb.InstanceSetting) *storepb.Insta
 	return instanceSetting
 }
 
-func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSetting) *v1pb.InstanceSetting_GeneralSetting {
+func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSetting, isAdmin bool) *v1pb.InstanceSetting_GeneralSetting {
 	if setting == nil {
 		return nil
 	}
 
 	generalSetting := &v1pb.InstanceSetting_GeneralSetting{
-		DisallowUserRegistration: setting.DisallowUserRegistration,
-		DisallowPasswordAuth:     setting.DisallowPasswordAuth,
-		AdditionalScript:         setting.AdditionalScript,
-		AdditionalStyle:          setting.AdditionalStyle,
-		WeekStartDayOffset:       setting.WeekStartDayOffset,
-		DisallowChangeUsername:   setting.DisallowChangeUsername,
-		DisallowChangeNickname:   setting.DisallowChangeNickname,
+		DisallowUserRegistration:        setting.DisallowUserRegistration,
+		DisallowPasswordAuth:            setting.DisallowPasswordAuth,
+		AdditionalScript:                setting.AdditionalScript,
+		AdditionalStyle:                 setting.AdditionalStyle,
+		WeekStartDayOffset:              setting.WeekStartDayOffset,
+		DisallowChangeUsername:          setting.DisallowChangeUsername,
+		DisallowChangeNickname:          setting.DisallowChangeNickname,
+		RegistrationInviteCodeRequired:  setting.RegistrationInviteCode != "",
+		RegistrationInviteCodeHint:      maskInviteCode(setting.RegistrationInviteCode),
+	}
+	if isAdmin {
+		generalSetting.RegistrationInviteCode = setting.RegistrationInviteCode
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.InstanceSetting_GeneralSetting_CustomProfile{
@@ -266,6 +286,7 @@ func convertInstanceGeneralSettingToStore(setting *v1pb.InstanceSetting_GeneralS
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
 		DisallowChangeUsername:   setting.DisallowChangeUsername,
 		DisallowChangeNickname:   setting.DisallowChangeNickname,
+		RegistrationInviteCode:   setting.RegistrationInviteCode,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.InstanceCustomProfile{
@@ -550,6 +571,17 @@ func maskAPIKey(apiKey string) string {
 	}
 	prefixLength := min(4, len(apiKey))
 	return apiKey[:prefixLength] + "..." + apiKey[len(apiKey)-4:]
+}
+
+// maskInviteCode returns a masked version of the invite code for display in admin settings.
+func maskInviteCode(code string) string {
+	if code == "" {
+		return ""
+	}
+	if len(code) <= 4 {
+		return "****"
+	}
+	return code[:2] + "****" + code[len(code)-2:]
 }
 
 func validateInstanceTagsSetting(setting *v1pb.InstanceSetting_TagsSetting) error {

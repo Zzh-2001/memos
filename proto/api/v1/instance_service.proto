@@ -116,6 +116,15 @@ message InstanceSetting {
     bool disallow_change_username = 8;
     // disallow_change_nickname disallows changing nickname.
     bool disallow_change_nickname = 9;
+    // registration_invite_code is the invite code required for registration.
+    // Write-only: never returned in responses.
+    string registration_invite_code = 10 [(google.api.field_behavior) = INPUT_ONLY];
+    // registration_invite_code_required indicates whether an invite code is configured.
+    // Read-only: derived from whether registration_invite_code is set.
+    bool registration_invite_code_required = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // registration_invite_code_hint is a masked hint for the stored invite code.
+    // Read-only: shows a masked version of the code so admins can identify it.
+    string registration_invite_code_hint = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
 
     // Custom profile configuration for instance branding.
     message CustomProfile {

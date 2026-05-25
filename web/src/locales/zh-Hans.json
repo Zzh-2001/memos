@@ -9,6 +9,8 @@
   "auth": {
     "create-your-account": "创建您的账户",
     "host-tip": "您正在注册为站点管理员。",
+    "invite-code": "邀请码",
+    "invite-code-placeholder": "输入邀请码",
     "new-password": "新密码",
     "protected-memo-notice": "此帖子不是公开的。请先登录后继续。",
     "repeat-new-password": "重复新密码",
@@ -129,6 +131,7 @@
     "exit-focus-mode": "退出聚焦模式",
     "focus-mode": "聚焦模式",
     "no-changes-detected": "未检测到更改",
+    "publish": "发布",
     "save": "保存",
     "saving": "保存中...",
     "slash-commands": "按下 `/` 输入命令",
@@ -565,6 +568,10 @@
       "disallow-password-auth": "禁用密码登录",
       "disallow-user-registration": "禁用用户注册",
       "monday": "周一",
+      "registration-invite-code": "注册邀请码",
+      "registration-invite-code-description": "新用户注册时需要输入邀请码",
+      "registration-invite-code-placeholder": "输入邀请码",
+      "registration-invite-code-configured": "已配置",
       "saturday": "周六",
       "sunday": "周日",
       "week-start-day": "周开始日"

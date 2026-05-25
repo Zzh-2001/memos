@@ -8,6 +8,8 @@
   },
   "auth": {
     "create-your-account": "Hesabınızı oluşturun",
+    "invite-code": "Invite Code",
+    "invite-code-placeholder": "Enter invite code",
     "host-tip": "Site Yöneticisi olarak kayıt oluyorsunuz.",
     "new-password": "Yeni şifre",
     "protected-memo-notice": "Bu not herkese açık değil. Devam etmek için giriş yapın.",
@@ -127,6 +129,7 @@
       "upload-file": "Dosya yükle"
     },
     "no-changes-detected": "Değişiklik yok",
+    "publish": "Publish",
     "save": "Kaydet",
     "saving": "Kaydediliyor...",
     "slash-commands": "Komutlar için `/` yazın",
@@ -467,6 +470,10 @@
       "disallow-change-username": "Kullanıcı adı değiştirmeyi yasakla",
       "disallow-password-auth": "Şifre ile kimlik doğrulamayı yasakla",
       "disallow-user-registration": "Kullanıcı kaydını yasakla",
+      "registration-invite-code": "Registration Invite Code",
+      "registration-invite-code-description": "Require an invite code for new user registration",
+      "registration-invite-code-placeholder": "Enter invite code",
+      "registration-invite-code-configured": "Configured",
       "monday": "Pazartesi",
       "saturday": "Cumartesi",
       "sunday": "Pazar",
