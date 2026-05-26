@@ -1,10 +1,12 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
+import { useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import UserAvatar from "@/components/UserAvatar";
 import { userServiceClient } from "@/connect";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { userKeys } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -16,6 +18,7 @@ interface Props {
 function MemoCommentMessage({ notification }: Props) {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
+  const queryClient = useQueryClient();
   const commentPayload = notification.payload?.case === "memoComment" ? notification.payload.value : undefined;
   const sender = notification.senderUser;
 
@@ -27,6 +30,7 @@ function MemoCommentMessage({ notification }: Props) {
       },
       updateMask: create(FieldMaskSchema, { paths: ["status"] }),
     });
+    await queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
     if (!silence) {
       toast.success("已标记为已读");
     }
@@ -36,6 +40,7 @@ function MemoCommentMessage({ notification }: Props) {
     await userServiceClient.deleteUserNotification({
       name: notification.name,
     });
+    await queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
     toast.success(t("message.deleted-successfully"));
   };
 
