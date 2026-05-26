@@ -134,6 +134,8 @@ message InstanceTagsSetting {
 
 message InstanceNotificationSetting {
   EmailSetting email = 1;
+  // global_webhooks are webhooks that receive events from all users (admin-configured).
+  repeated GlobalWebhook global_webhooks = 2;
 
   message EmailSetting {
     bool enabled = 1;
@@ -146,6 +148,15 @@ message InstanceNotificationSetting {
     string reply_to = 8;
     bool use_tls = 9;
     bool use_ssl = 10;
+  }
+
+  message GlobalWebhook {
+    // Unique identifier for the global webhook.
+    string id = 1;
+    // Human-readable title.
+    string title = 2;
+    // The HTTP(S) endpoint to POST events to.
+    string url = 3;
   }
 }
 

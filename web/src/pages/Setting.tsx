@@ -24,6 +24,7 @@ import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
 import TagsSection from "@/components/Settings/TagsSection";
+import GlobalWebhookSection from "@/components/Settings/GlobalWebhookSection";
 import WebhookSection from "@/components/Settings/WebhookSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -33,10 +34,10 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso" | "tags" | "ai";
+type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso" | "tags" | "ai" | "global-webhook";
 
-const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference", "webhook"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "tags", "storage", "sso", "ai"];
+const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "tags", "storage", "sso", "ai", "global-webhook"];
 const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
 
 const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
@@ -52,6 +53,7 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   tags: TagsIcon,
   sso: KeyIcon,
   ai: HeartHandshakeIcon,
+  "global-webhook": WebhookIcon,
 };
 
 const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
@@ -65,6 +67,7 @@ const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
   tags: TagsSection,
   sso: SSOSection,
   ai: AISection,
+  "global-webhook": GlobalWebhookSection,
 };
 
 const Setting = () => {

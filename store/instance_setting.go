@@ -218,6 +218,29 @@ func (s *Store) GetInstanceNotificationSetting(ctx context.Context) (*storepb.In
 	return instanceNotificationSetting, nil
 }
 
+// GetInstanceGlobalWebhooks returns the global webhooks configured by the admin.
+func (s *Store) GetInstanceGlobalWebhooks(ctx context.Context) ([]*storepb.InstanceNotificationSetting_GlobalWebhook, error) {
+	setting, err := s.GetInstanceNotificationSetting(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance notification setting")
+	}
+	return setting.GetGlobalWebhooks(), nil
+}
+
+// UpsertInstanceGlobalWebhooks replaces the global webhook list while preserving the existing email setting.
+func (s *Store) UpsertInstanceGlobalWebhooks(ctx context.Context, webhooks []*storepb.InstanceNotificationSetting_GlobalWebhook) error {
+	existing, err := s.GetInstanceNotificationSetting(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get existing notification setting")
+	}
+	existing.GlobalWebhooks = webhooks
+	_, err = s.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{NotificationSetting: existing},
+	})
+	return errors.Wrap(err, "failed to upsert instance notification setting")
+}
+
 // GetInstanceAISetting gets the AI provider settings for the instance.
 func (s *Store) GetInstanceAISetting(ctx context.Context) (*storepb.InstanceAISetting, error) {
 	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{

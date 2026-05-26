@@ -643,6 +643,9 @@
       "url": "URL",
       "label": "Webhooks"
     },
+    "global-webhook": {
+      "label": "Global Webhooks"
+    },
     "tags": {
       "label": "Tags",
       "title": "Tag metadata",

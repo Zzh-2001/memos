@@ -31,3 +31,9 @@ dist
 
 # Frontend test coverage output (Vitest + @vitest/coverage-v8).
 web/coverage/
+
+# Webhook receiver config (contains sensitive PAT)
+scripts/webhook/config.json
+
+# 临时数据文件夹
+dev_data/

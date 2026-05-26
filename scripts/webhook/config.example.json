@@ -1,0 +1,14 @@
+{
+  "port": 5000,
+  "secret": "",
+  "log": "",
+  "debug": false,
+  "memos_url": "http://localhost:8081",
+  "pat": "",
+  "ai_base_url": "https://api.openai.com/v1",
+  "ai_api_key": "",
+  "ai_model": "gpt-4o",
+  "ai_system_prompt": "你是一个友好的社区助手。用户发布了一条帖子，请根据帖子内容给出简短、温暖、有意义的回复。回复使用中文，不超过3句话。",
+  "ai_max_tokens": 512,
+  "ai_image_max_size": 2048
+}

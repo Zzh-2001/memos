@@ -1,0 +1,12 @@
+2026-05-26 13:53:57 [INFO] 当前 PAT 用户: users/AI-Bot
+2026-05-26 13:53:57 [INFO] Webhook 接收服务已启动，监听 0.0.0.0:5000
+2026-05-26 13:53:57 [INFO] AI 自动回复已启用: model=qwen3.6-plus, max_tokens=512
+2026-05-26 13:53:57 [INFO] 支持的事件类型: memos.memo.created, memos.memo.updated, memos.memo.deleted, memos.memo.comment.created
+2026-05-26 13:57:17 [INFO] 收到事件: Memo 创建 (memos.memo.created)
+2026-05-26 13:57:17 [INFO] [创建] creator=users/ZZH  uid=None  visibility=3  content=减肥ing，晚上吃什么好呢
+2026-05-26 13:57:29 [INFO] AI 回复成功: 推荐试试清炒时蔬搭配蒸鱼或豆腐，再配一小份杂粮饭，低卡又饱腹哦～减肥路上记得循序渐进，照顾好身体才是长久之计，祝你健康轻盈地达成目标！
+2026-05-26 13:57:29 [INFO] 已为 memos/HnKo8YAHnhAx5E8xY3LiX4 自动添加评论
+2026-05-26 13:57:29 [INFO] 收到事件: Memo 创建 (memos.memo.created)
+2026-05-26 13:57:29 [INFO] [创建] creator=users/AI-Bot  uid=None  visibility=3  content=推荐试试清炒时蔬搭配蒸鱼或豆腐，再配一小份杂粮饭，低卡又饱腹哦～减肥路上记得循序渐进，照顾好身体才是长久之计，祝你健康轻盈地达成目标！
+2026-05-26 13:57:31 [INFO] 收到事件: 评论创建 (memos.memo.comment.created)
+2026-05-26 13:57:31 [INFO] [评论] creator=users/AI-Bot  on_memo=memos/3KB9MsRs2KJEBa9KNJzBsa  content=推荐试试清炒时蔬搭配蒸鱼或豆腐，再配一小份杂粮饭，低卡又饱腹哦～减肥路上记得循序渐进，照顾好身体才是长久之计，祝你健康轻盈地达成目标！

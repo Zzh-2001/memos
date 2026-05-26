@@ -926,10 +926,12 @@ func (x *InstanceTagsSetting) GetTags() map[string]*InstanceTagMetadata {
 }
 
 type InstanceNotificationSetting struct {
-	state         protoimpl.MessageState                    `protogen:"open.v1"`
-	Email         *InstanceNotificationSetting_EmailSetting `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state protoimpl.MessageState                    `protogen:"open.v1"`
+	Email *InstanceNotificationSetting_EmailSetting `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	// global_webhooks are webhooks that receive events from all users (admin-configured).
+	GlobalWebhooks []*InstanceNotificationSetting_GlobalWebhook `protobuf:"bytes,2,rep,name=global_webhooks,json=globalWebhooks,proto3" json:"global_webhooks,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *InstanceNotificationSetting) Reset() {
@@ -965,6 +967,13 @@ func (*InstanceNotificationSetting) Descriptor() ([]byte, []int) {
 func (x *InstanceNotificationSetting) GetEmail() *InstanceNotificationSetting_EmailSetting {
 	if x != nil {
 		return x.Email
+	}
+	return nil
+}
+
+func (x *InstanceNotificationSetting) GetGlobalWebhooks() []*InstanceNotificationSetting_GlobalWebhook {
+	if x != nil {
+		return x.GlobalWebhooks
 	}
 	return nil
 }
@@ -1207,6 +1216,69 @@ func (x *InstanceNotificationSetting_EmailSetting) GetUseSsl() bool {
 	return false
 }
 
+type InstanceNotificationSetting_GlobalWebhook struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Unique identifier for the global webhook.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Human-readable title.
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// The HTTP(S) endpoint to POST events to.
+	Url           string `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InstanceNotificationSetting_GlobalWebhook) Reset() {
+	*x = InstanceNotificationSetting_GlobalWebhook{}
+	mi := &file_store_instance_setting_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstanceNotificationSetting_GlobalWebhook) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstanceNotificationSetting_GlobalWebhook) ProtoMessage() {}
+
+func (x *InstanceNotificationSetting_GlobalWebhook) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstanceNotificationSetting_GlobalWebhook.ProtoReflect.Descriptor instead.
+func (*InstanceNotificationSetting_GlobalWebhook) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{9, 1}
+}
+
+func (x *InstanceNotificationSetting_GlobalWebhook) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *InstanceNotificationSetting_GlobalWebhook) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *InstanceNotificationSetting_GlobalWebhook) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
 var File_store_instance_setting_proto protoreflect.FileDescriptor
 
 const file_store_instance_setting_proto_rawDesc = "" +
@@ -1270,9 +1342,10 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x04tags\x18\x01 \x03(\v2*.memos.store.InstanceTagsSetting.TagsEntryR\x04tags\x1aY\n" +
 	"\tTagsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x126\n" +
-	"\x05value\x18\x02 \x01(\v2 .memos.store.InstanceTagMetadataR\x05value:\x028\x01\"\xa2\x03\n" +
+	"\x05value\x18\x02 \x01(\v2 .memos.store.InstanceTagMetadataR\x05value:\x028\x01\"\xcc\x04\n" +
 	"\x1bInstanceNotificationSetting\x12K\n" +
-	"\x05email\x18\x01 \x01(\v25.memos.store.InstanceNotificationSetting.EmailSettingR\x05email\x1a\xb5\x02\n" +
+	"\x05email\x18\x01 \x01(\v25.memos.store.InstanceNotificationSetting.EmailSettingR\x05email\x12_\n" +
+	"\x0fglobal_webhooks\x18\x02 \x03(\v26.memos.store.InstanceNotificationSetting.GlobalWebhookR\x0eglobalWebhooks\x1a\xb5\x02\n" +
 	"\fEmailSetting\x12\x18\n" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\x1b\n" +
 	"\tsmtp_host\x18\x02 \x01(\tR\bsmtpHost\x12\x1b\n" +
@@ -1285,7 +1358,11 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\breply_to\x18\b \x01(\tR\areplyTo\x12\x17\n" +
 	"\ause_tls\x18\t \x01(\bR\x06useTls\x12\x17\n" +
 	"\ause_ssl\x18\n" +
-	" \x01(\bR\x06useSsl\"P\n" +
+	" \x01(\bR\x06useSsl\x1aG\n" +
+	"\rGlobalWebhook\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x10\n" +
+	"\x03url\x18\x03 \x01(\tR\x03url\"P\n" +
 	"\x11InstanceAISetting\x12;\n" +
 	"\tproviders\x18\x01 \x03(\v2\x1d.memos.store.AIProviderConfigR\tproviders\"\x9e\x01\n" +
 	"\x10AIProviderConfig\x12\x0e\n" +
@@ -1324,26 +1401,27 @@ func file_store_instance_setting_proto_rawDescGZIP() []byte {
 }
 
 var file_store_instance_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_store_instance_setting_proto_goTypes = []any{
-	(InstanceSettingKey)(0),                          // 0: memos.store.InstanceSettingKey
-	(AIProviderType)(0),                              // 1: memos.store.AIProviderType
-	(InstanceStorageSetting_StorageType)(0),          // 2: memos.store.InstanceStorageSetting.StorageType
-	(*InstanceSetting)(nil),                          // 3: memos.store.InstanceSetting
-	(*InstanceBasicSetting)(nil),                     // 4: memos.store.InstanceBasicSetting
-	(*InstanceGeneralSetting)(nil),                   // 5: memos.store.InstanceGeneralSetting
-	(*InstanceCustomProfile)(nil),                    // 6: memos.store.InstanceCustomProfile
-	(*InstanceStorageSetting)(nil),                   // 7: memos.store.InstanceStorageSetting
-	(*StorageS3Config)(nil),                          // 8: memos.store.StorageS3Config
-	(*InstanceMemoRelatedSetting)(nil),               // 9: memos.store.InstanceMemoRelatedSetting
-	(*InstanceTagMetadata)(nil),                      // 10: memos.store.InstanceTagMetadata
-	(*InstanceTagsSetting)(nil),                      // 11: memos.store.InstanceTagsSetting
-	(*InstanceNotificationSetting)(nil),              // 12: memos.store.InstanceNotificationSetting
-	(*InstanceAISetting)(nil),                        // 13: memos.store.InstanceAISetting
-	(*AIProviderConfig)(nil),                         // 14: memos.store.AIProviderConfig
-	nil,                                              // 15: memos.store.InstanceTagsSetting.TagsEntry
-	(*InstanceNotificationSetting_EmailSetting)(nil), // 16: memos.store.InstanceNotificationSetting.EmailSetting
-	(*color.Color)(nil),                              // 17: google.type.Color
+	(InstanceSettingKey)(0),                           // 0: memos.store.InstanceSettingKey
+	(AIProviderType)(0),                               // 1: memos.store.AIProviderType
+	(InstanceStorageSetting_StorageType)(0),           // 2: memos.store.InstanceStorageSetting.StorageType
+	(*InstanceSetting)(nil),                           // 3: memos.store.InstanceSetting
+	(*InstanceBasicSetting)(nil),                      // 4: memos.store.InstanceBasicSetting
+	(*InstanceGeneralSetting)(nil),                    // 5: memos.store.InstanceGeneralSetting
+	(*InstanceCustomProfile)(nil),                     // 6: memos.store.InstanceCustomProfile
+	(*InstanceStorageSetting)(nil),                    // 7: memos.store.InstanceStorageSetting
+	(*StorageS3Config)(nil),                           // 8: memos.store.StorageS3Config
+	(*InstanceMemoRelatedSetting)(nil),                // 9: memos.store.InstanceMemoRelatedSetting
+	(*InstanceTagMetadata)(nil),                       // 10: memos.store.InstanceTagMetadata
+	(*InstanceTagsSetting)(nil),                       // 11: memos.store.InstanceTagsSetting
+	(*InstanceNotificationSetting)(nil),               // 12: memos.store.InstanceNotificationSetting
+	(*InstanceAISetting)(nil),                         // 13: memos.store.InstanceAISetting
+	(*AIProviderConfig)(nil),                          // 14: memos.store.AIProviderConfig
+	nil,                                               // 15: memos.store.InstanceTagsSetting.TagsEntry
+	(*InstanceNotificationSetting_EmailSetting)(nil),  // 16: memos.store.InstanceNotificationSetting.EmailSetting
+	(*InstanceNotificationSetting_GlobalWebhook)(nil), // 17: memos.store.InstanceNotificationSetting.GlobalWebhook
+	(*color.Color)(nil),                               // 18: google.type.Color
 }
 var file_store_instance_setting_proto_depIdxs = []int32{
 	0,  // 0: memos.store.InstanceSetting.key:type_name -> memos.store.InstanceSettingKey
@@ -1357,17 +1435,18 @@ var file_store_instance_setting_proto_depIdxs = []int32{
 	6,  // 8: memos.store.InstanceGeneralSetting.custom_profile:type_name -> memos.store.InstanceCustomProfile
 	2,  // 9: memos.store.InstanceStorageSetting.storage_type:type_name -> memos.store.InstanceStorageSetting.StorageType
 	8,  // 10: memos.store.InstanceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
-	17, // 11: memos.store.InstanceTagMetadata.background_color:type_name -> google.type.Color
+	18, // 11: memos.store.InstanceTagMetadata.background_color:type_name -> google.type.Color
 	15, // 12: memos.store.InstanceTagsSetting.tags:type_name -> memos.store.InstanceTagsSetting.TagsEntry
 	16, // 13: memos.store.InstanceNotificationSetting.email:type_name -> memos.store.InstanceNotificationSetting.EmailSetting
-	14, // 14: memos.store.InstanceAISetting.providers:type_name -> memos.store.AIProviderConfig
-	1,  // 15: memos.store.AIProviderConfig.type:type_name -> memos.store.AIProviderType
-	10, // 16: memos.store.InstanceTagsSetting.TagsEntry.value:type_name -> memos.store.InstanceTagMetadata
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	17, // 14: memos.store.InstanceNotificationSetting.global_webhooks:type_name -> memos.store.InstanceNotificationSetting.GlobalWebhook
+	14, // 15: memos.store.InstanceAISetting.providers:type_name -> memos.store.AIProviderConfig
+	1,  // 16: memos.store.AIProviderConfig.type:type_name -> memos.store.AIProviderType
+	10, // 17: memos.store.InstanceTagsSetting.TagsEntry.value:type_name -> memos.store.InstanceTagMetadata
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_store_instance_setting_proto_init() }
@@ -1390,7 +1469,7 @@ func file_store_instance_setting_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_instance_setting_proto_rawDesc), len(file_store_instance_setting_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   14,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

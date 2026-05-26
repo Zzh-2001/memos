@@ -606,6 +606,9 @@
       "url": "链接",
       "label": "Webhook"
     },
+    "global-webhook": {
+      "label": "全局 Webhook"
+    },
     "tags": {
       "label": "标签",
       "title": "标签元数据",

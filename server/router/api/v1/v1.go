@@ -126,6 +126,8 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	}))
 	// Register SSE endpoint with same CORS as rest of /api/v1.
 	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
+	// Register global webhook management endpoints (admin-only).
+	s.RegisterGlobalWebhookRoutes(gwGroup)
 	handler := echo.WrapHandler(http.MaxBytesHandler(gwMux, maxAPIRequestBytes))
 
 	gwGroup.Any("/api/v1/*", handler)
