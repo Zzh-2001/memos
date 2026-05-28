@@ -37,3 +37,11 @@
 2026-05-26 14:54:29 [INFO] [评论] creator=users/AI-Bot  on_memo=memos/mTYGgKnLHUuEYYeTMSmM4J  content=测试顺利呀！九龙湖校区的场地很适合信号调试，祝你的接收器测试一次成功。如有数据或心得，随时欢迎在这里交流分享～！
 2026-05-26 14:54:29 [INFO] 收到事件: 评论创建 (memos.memo.comment.created)
 2026-05-26 14:54:29 [INFO] [评论] creator=users/AI-Bot  on_memo=memos/mTYGgKnLHUuEYYeTMSmM4J  content=测试顺利呀！九龙湖校区的场地很适合信号调试，祝你的接收器测试一次成功。如有数据或心得，随时欢迎在这里交流分享～！
+2026-05-26 15:00:31 [INFO] 当前 PAT 用户: users/AI-Bot
+2026-05-26 15:00:31 [INFO] Webhook 接收服务已启动，监听 0.0.0.0:5000
+2026-05-26 15:00:31 [INFO] AI 自动回复已启用: model=qwen3.6-plus, max_tokens=512
+2026-05-26 15:00:31 [INFO] 支持的事件类型: memos.memo.created, memos.memo.updated, memos.memo.deleted, memos.memo.comment.created
+2026-05-26 15:00:31 [INFO] 当前 PAT 用户: users/AI-Bot
+2026-05-26 15:00:31 [INFO] Webhook 接收服务已启动，监听 0.0.0.0:5000
+2026-05-26 15:00:31 [INFO] AI 自动回复已启用: model=qwen3.6-plus, max_tokens=512
+2026-05-26 15:00:31 [INFO] 支持的事件类型: memos.memo.created, memos.memo.updated, memos.memo.deleted, memos.memo.comment.created

@@ -609,6 +609,9 @@
     "global-webhook": {
       "label": "全局 Webhook"
     },
+    "webhook-receiver": {
+      "label": "接收器"
+    },
     "tags": {
       "label": "标签",
       "title": "标签元数据",

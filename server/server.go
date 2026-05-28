@@ -39,6 +39,9 @@ type Server struct {
 
 	backgroundRunnerCancels []context.CancelFunc
 	backgroundRunnerWG      sync.WaitGroup
+
+	// apiV1Service holds a reference for shutdown cleanup.
+	apiV1Service *apiv1.APIV1Service
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -74,6 +77,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	s.sseHub = apiV1Service.SSEHub
+	s.apiV1Service = apiV1Service
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
 	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
@@ -135,6 +139,10 @@ func (s *Server) Shutdown(ctx context.Context) {
 	slog.Info("server shutting down")
 
 	s.stopBackgroundRunners()
+	// Stop the webhook receiver subprocess if running.
+	if s.apiV1Service != nil {
+		s.apiV1Service.ShutdownWebhookReceiver()
+	}
 	s.closeLongLivedConnections()
 	s.shutdownHTTPServer(ctx)
 	s.waitBackgroundRunners(ctx)

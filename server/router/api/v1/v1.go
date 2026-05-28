@@ -40,6 +40,9 @@ type APIV1Service struct {
 	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
 	thumbnailSemaphore       *semaphore.Weighted
 	imageProcessingSemaphore *semaphore.Weighted
+
+	// receiverMgr manages the Python webhook receiver subprocess.
+	receiverMgr *webhookReceiverManager
 }
 
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
@@ -128,6 +131,8 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
 	// Register global webhook management endpoints (admin-only).
 	s.RegisterGlobalWebhookRoutes(gwGroup)
+	// Register webhook receiver management endpoints (admin-only).
+	s.RegisterWebhookReceiverRoutes(gwGroup)
 	handler := echo.WrapHandler(http.MaxBytesHandler(gwMux, maxAPIRequestBytes))
 
 	gwGroup.Any("/api/v1/*", handler)

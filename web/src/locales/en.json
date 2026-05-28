@@ -646,6 +646,9 @@
     "global-webhook": {
       "label": "Global Webhooks"
     },
+    "webhook-receiver": {
+      "label": "Receiver"
+    },
     "tags": {
       "label": "Tags",
       "title": "Tag metadata",
