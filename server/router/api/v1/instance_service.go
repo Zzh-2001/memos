@@ -135,10 +135,15 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	// An empty string means "no change", not "clear the credential".
 	switch updateSetting.Key {
 	case storepb.InstanceSettingKey_GENERAL:
-		if general := updateSetting.GetGeneralSetting(); general != nil && general.RegistrationInviteCode == "" {
+		if general := updateSetting.GetGeneralSetting(); general != nil {
 			existing, err := s.Store.GetInstanceGeneralSetting(ctx)
-			if err == nil && existing != nil && existing.RegistrationInviteCode != "" {
-				general.RegistrationInviteCode = existing.RegistrationInviteCode
+			if err == nil && existing != nil {
+				if general.RegistrationInviteCode == "" && existing.RegistrationInviteCode != "" {
+					general.RegistrationInviteCode = existing.RegistrationInviteCode
+				}
+				if general.AmapKey == "" && existing.AmapKey != "" {
+					general.AmapKey = existing.AmapKey
+				}
 			}
 		}
 	case storepb.InstanceSettingKey_NOTIFICATION:
@@ -260,6 +265,7 @@ func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSett
 		DisallowChangeNickname:          setting.DisallowChangeNickname,
 		RegistrationInviteCodeRequired:  setting.RegistrationInviteCode != "",
 		RegistrationInviteCodeHint:      maskInviteCode(setting.RegistrationInviteCode),
+		AmapKey:                         setting.AmapKey,
 	}
 	if isAdmin {
 		generalSetting.RegistrationInviteCode = setting.RegistrationInviteCode
@@ -287,6 +293,7 @@ func convertInstanceGeneralSettingToStore(setting *v1pb.InstanceSetting_GeneralS
 		DisallowChangeUsername:   setting.DisallowChangeUsername,
 		DisallowChangeNickname:   setting.DisallowChangeNickname,
 		RegistrationInviteCode:   setting.RegistrationInviteCode,
+		AmapKey:                  setting.AmapKey,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.InstanceCustomProfile{

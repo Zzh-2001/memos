@@ -132,7 +132,9 @@ func (s *Store) GetInstanceGeneralSetting(ctx context.Context) (*storepb.Instanc
 		return nil, errors.Wrap(err, "failed to get instance general setting")
 	}
 
-	instanceGeneralSetting := &storepb.InstanceGeneralSetting{}
+	instanceGeneralSetting := &storepb.InstanceGeneralSetting{
+		WeekStartDayOffset: 1,
+	}
 	if instanceSetting != nil {
 		instanceGeneralSetting = instanceSetting.GetGeneralSetting()
 	}

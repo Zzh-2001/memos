@@ -57,7 +57,7 @@ message InstanceGeneralSetting {
   InstanceCustomProfile custom_profile = 6;
   // week_start_day_offset is the week start day offset from Sunday.
   // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
-  // Default is Sunday.
+  // Default is Monday.
   int32 week_start_day_offset = 7;
   // disallow_change_username disallows changing username.
   bool disallow_change_username = 8;
@@ -66,6 +66,8 @@ message InstanceGeneralSetting {
   // registration_invite_code is the invite code required for user registration.
   // If empty, no invite code is required.
   string registration_invite_code = 10;
+  // amap_key is the AMap (Gaode) Web API key for map features.
+  string amap_key = 11;
 }
 
 message InstanceCustomProfile {

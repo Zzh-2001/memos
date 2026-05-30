@@ -109,7 +109,7 @@ message InstanceSetting {
     CustomProfile custom_profile = 6;
     // week_start_day_offset is the week start day offset from Sunday.
     // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
-    // Default is Sunday.
+    // Default is Monday.
     int32 week_start_day_offset = 7;
 
     // disallow_change_username disallows changing username.
@@ -125,6 +125,8 @@ message InstanceSetting {
     // registration_invite_code_hint is a masked hint for the stored invite code.
     // Read-only: shows a masked version of the code so admins can identify it.
     string registration_invite_code_hint = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // amap_key is the AMap (Gaode) Web API key for map features.
+    string amap_key = 13 [(google.api.field_behavior) = INPUT_ONLY];
 
     // Custom profile configuration for instance branding.
     message CustomProfile {

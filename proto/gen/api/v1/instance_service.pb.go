@@ -592,7 +592,7 @@ type InstanceSetting_GeneralSetting struct {
 	CustomProfile *InstanceSetting_GeneralSetting_CustomProfile `protobuf:"bytes,6,opt,name=custom_profile,json=customProfile,proto3" json:"custom_profile,omitempty"`
 	// week_start_day_offset is the week start day offset from Sunday.
 	// 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
-	// Default is Sunday.
+	// Default is Monday.
 	WeekStartDayOffset int32 `protobuf:"varint,7,opt,name=week_start_day_offset,json=weekStartDayOffset,proto3" json:"week_start_day_offset,omitempty"`
 	// disallow_change_username disallows changing username.
 	DisallowChangeUsername bool `protobuf:"varint,8,opt,name=disallow_change_username,json=disallowChangeUsername,proto3" json:"disallow_change_username,omitempty"`
@@ -607,8 +607,10 @@ type InstanceSetting_GeneralSetting struct {
 	// registration_invite_code_hint is a masked hint for the stored invite code.
 	// Read-only: shows a masked version of the code so admins can identify it.
 	RegistrationInviteCodeHint string `protobuf:"bytes,12,opt,name=registration_invite_code_hint,json=registrationInviteCodeHint,proto3" json:"registration_invite_code_hint,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// amap_key is the AMap (Gaode) Web API key for map features.
+	AmapKey       string `protobuf:"bytes,13,opt,name=amap_key,json=amapKey,proto3" json:"amap_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InstanceSetting_GeneralSetting) Reset() {
@@ -714,6 +716,13 @@ func (x *InstanceSetting_GeneralSetting) GetRegistrationInviteCodeRequired() boo
 func (x *InstanceSetting_GeneralSetting) GetRegistrationInviteCodeHint() string {
 	if x != nil {
 		return x.RegistrationInviteCodeHint
+	}
+	return ""
+}
+
+func (x *InstanceSetting_GeneralSetting) GetAmapKey() string {
+	if x != nil {
+		return x.AmapKey
 	}
 	return ""
 }
@@ -1423,7 +1432,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12(\n" +
 	"\x05admin\x18\a \x01(\v2\x12.memos.api.v1.UserR\x05admin\x12\x16\n" +
 	"\x06commit\x18\b \x01(\tR\x06commit\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xbd\x1b\n" +
+	"\x19GetInstanceProfileRequest\"\xdd\x1b\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -1432,7 +1441,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\ftags_setting\x18\x05 \x01(\v2).memos.api.v1.InstanceSetting.TagsSettingH\x00R\vtagsSetting\x12f\n" +
 	"\x14notification_setting\x18\x06 \x01(\v21.memos.api.v1.InstanceSetting.NotificationSettingH\x00R\x13notificationSetting\x12H\n" +
 	"\n" +
-	"ai_setting\x18\a \x01(\v2'.memos.api.v1.InstanceSetting.AISettingH\x00R\taiSetting\x1a\xa1\x06\n" +
+	"ai_setting\x18\a \x01(\v2'.memos.api.v1.InstanceSetting.AISettingH\x00R\taiSetting\x1a\xc1\x06\n" +
 	"\x0eGeneralSetting\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
 	"\x16disallow_password_auth\x18\x03 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
@@ -1445,7 +1454,8 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x18registration_invite_code\x18\n" +
 	" \x01(\tB\x03\xe0A\x04R\x16registrationInviteCode\x12N\n" +
 	"!registration_invite_code_required\x18\v \x01(\bB\x03\xe0A\x03R\x1eregistrationInviteCodeRequired\x12F\n" +
-	"\x1dregistration_invite_code_hint\x18\f \x01(\tB\x03\xe0A\x03R\x1aregistrationInviteCodeHint\x1ab\n" +
+	"\x1dregistration_invite_code_hint\x18\f \x01(\tB\x03\xe0A\x03R\x1aregistrationInviteCodeHint\x12\x1e\n" +
+	"\bamap_key\x18\r \x01(\tB\x03\xe0A\x04R\aamapKey\x1ab\n" +
 	"\rCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +

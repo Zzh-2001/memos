@@ -435,7 +435,7 @@ type InstanceGeneralSetting struct {
 	CustomProfile *InstanceCustomProfile `protobuf:"bytes,6,opt,name=custom_profile,json=customProfile,proto3" json:"custom_profile,omitempty"`
 	// week_start_day_offset is the week start day offset from Sunday.
 	// 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
-	// Default is Sunday.
+	// Default is Monday.
 	WeekStartDayOffset int32 `protobuf:"varint,7,opt,name=week_start_day_offset,json=weekStartDayOffset,proto3" json:"week_start_day_offset,omitempty"`
 	// disallow_change_username disallows changing username.
 	DisallowChangeUsername bool `protobuf:"varint,8,opt,name=disallow_change_username,json=disallowChangeUsername,proto3" json:"disallow_change_username,omitempty"`
@@ -444,8 +444,10 @@ type InstanceGeneralSetting struct {
 	// registration_invite_code is the invite code required for user registration.
 	// If empty, no invite code is required.
 	RegistrationInviteCode string `protobuf:"bytes,10,opt,name=registration_invite_code,json=registrationInviteCode,proto3" json:"registration_invite_code,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// amap_key is the AMap (Gaode) Web API key for map features.
+	AmapKey       string `protobuf:"bytes,11,opt,name=amap_key,json=amapKey,proto3" json:"amap_key,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InstanceGeneralSetting) Reset() {
@@ -537,6 +539,13 @@ func (x *InstanceGeneralSetting) GetDisallowChangeNickname() bool {
 func (x *InstanceGeneralSetting) GetRegistrationInviteCode() string {
 	if x != nil {
 		return x.RegistrationInviteCode
+	}
+	return ""
+}
+
+func (x *InstanceGeneralSetting) GetAmapKey() string {
+	if x != nil {
+		return x.AmapKey
 	}
 	return ""
 }
@@ -1298,7 +1307,7 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x14InstanceBasicSetting\x12\x1d\n" +
 	"\n" +
 	"secret_key\x18\x01 \x01(\tR\tsecretKey\x12%\n" +
-	"\x0eschema_version\x18\x02 \x01(\tR\rschemaVersion\"\x90\x04\n" +
+	"\x0eschema_version\x18\x02 \x01(\tR\rschemaVersion\"\xab\x04\n" +
 	"\x16InstanceGeneralSetting\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
 	"\x16disallow_password_auth\x18\x03 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
@@ -1309,7 +1318,8 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x18disallow_change_username\x18\b \x01(\bR\x16disallowChangeUsername\x128\n" +
 	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\x128\n" +
 	"\x18registration_invite_code\x18\n" +
-	" \x01(\tR\x16registrationInviteCode\"j\n" +
+	" \x01(\tR\x16registrationInviteCode\x12\x19\n" +
+	"\bamap_key\x18\v \x01(\tR\aamapKey\"j\n" +
 	"\x15InstanceCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +

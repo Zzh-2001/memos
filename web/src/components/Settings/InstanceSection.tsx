@@ -32,6 +32,7 @@ const InstanceSection = () => {
   const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const [showInviteCode, setShowInviteCode] = useState(false);
+  const [showAmapKey, setShowAmapKey] = useState(false);
 
   useEffect(() => {
     setInstanceGeneralSetting((prev) =>
@@ -122,7 +123,10 @@ const InstanceSection = () => {
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.instance.registration-invite-code")} description={t("setting.instance.registration-invite-code-description")}>
+        <SettingRow
+          label={t("setting.instance.registration-invite-code")}
+          description={t("setting.instance.registration-invite-code-description")}
+        >
           <div className="flex flex-row items-center gap-1">
             <Input
               className="w-40"
@@ -164,6 +168,21 @@ const InstanceSection = () => {
             checked={instanceGeneralSetting.disallowChangeNickname}
             onCheckedChange={(checked) => updatePartialSetting({ disallowChangeNickname: checked })}
           />
+        </SettingRow>
+
+        <SettingRow label={t("setting.instance.amap-key")} description={t("setting.instance.amap-key-description")}>
+          <div className="flex flex-row items-center gap-1">
+            <Input
+              className="w-80"
+              type={showAmapKey ? "text" : "password"}
+              placeholder={t("setting.instance.amap-key-placeholder")}
+              value={instanceGeneralSetting.amapKey || ""}
+              onChange={(event) => updatePartialSetting({ amapKey: event.target.value })}
+            />
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={() => setShowAmapKey(!showAmapKey)}>
+              {showAmapKey ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+            </Button>
+          </div>
         </SettingRow>
 
         <SettingRow label={t("setting.instance.week-start-day")}>

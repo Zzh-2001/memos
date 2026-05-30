@@ -574,7 +574,10 @@
       "registration-invite-code-configured": "已配置",
       "saturday": "周六",
       "sunday": "周日",
-      "week-start-day": "周开始日"
+      "week-start-day": "周开始日",
+      "amap-key": "高德地图 Key",
+      "amap-key-description": "用于地图搜索、地理编码等功能的 Web API Key",
+      "amap-key-placeholder": "输入你的高德 Key"
     },
     "memo": {
       "content-length-limit": "内容长度限制（字节）",

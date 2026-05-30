@@ -449,7 +449,10 @@
       "registration-invite-code-configured": "Configured",
       "saturday": "Saturday",
       "sunday": "Sunday",
-      "week-start-day": "Week start day"
+      "week-start-day": "Week start day",
+      "amap-key": "AMap Key",
+      "amap-key-description": "Gaode Map Web API key for location search and geocoding",
+      "amap-key-placeholder": "Enter your AMap key"
     },
     "member": {
       "active": "Active",

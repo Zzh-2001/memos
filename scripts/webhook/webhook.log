@@ -69,3 +69,11 @@
 2026-05-30 11:16:37 [INFO] [评论] creator=users/test  on_memo=memos/kGfNgaBoqn6dNa9zt38WrZ  content=哈哈，好的呢
 2026-05-30 11:16:37 [INFO] 收到事件: 评论创建 (memos.memo.comment.created)
 2026-05-30 11:16:37 [INFO] [评论] creator=users/test  on_memo=memos/kGfNgaBoqn6dNa9zt38WrZ  content=哈哈，好的呢
+2026-05-30 12:48:18 [INFO] 当前 PAT 用户: users/AI-Bot
+2026-05-30 12:48:18 [INFO] 当前 PAT 用户: users/AI-Bot
+2026-05-30 12:48:18 [INFO] Webhook 接收服务已启动，监听 0.0.0.0:5000
+2026-05-30 12:48:18 [INFO] Webhook 接收服务已启动，监听 0.0.0.0:5000
+2026-05-30 12:48:18 [INFO] AI 自动回复已启用: model=qwen3.6-plus, max_tokens=512
+2026-05-30 12:48:18 [INFO] AI 自动回复已启用: model=qwen3.6-plus, max_tokens=512
+2026-05-30 12:48:18 [INFO] 支持的事件类型: memos.memo.created, memos.memo.updated, memos.memo.deleted, memos.memo.comment.created
+2026-05-30 12:48:18 [INFO] 支持的事件类型: memos.memo.created, memos.memo.updated, memos.memo.deleted, memos.memo.comment.created
