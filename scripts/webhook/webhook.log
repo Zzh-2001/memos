@@ -45,3 +45,27 @@
 2026-05-26 15:00:31 [INFO] Webhook 接收服务已启动，监听 0.0.0.0:5000
 2026-05-26 15:00:31 [INFO] AI 自动回复已启用: model=qwen3.6-plus, max_tokens=512
 2026-05-26 15:00:31 [INFO] 支持的事件类型: memos.memo.created, memos.memo.updated, memos.memo.deleted, memos.memo.comment.created
+2026-05-30 11:15:01 [INFO] 当前 PAT 用户: users/AI-Bot
+2026-05-30 11:15:01 [INFO] Webhook 接收服务已启动，监听 0.0.0.0:5000
+2026-05-30 11:15:01 [INFO] AI 自动回复已启用: model=qwen3.6-plus, max_tokens=512
+2026-05-30 11:15:01 [INFO] 支持的事件类型: memos.memo.created, memos.memo.updated, memos.memo.deleted, memos.memo.comment.created
+2026-05-30 11:15:01 [INFO] 当前 PAT 用户: users/AI-Bot
+2026-05-30 11:15:01 [INFO] Webhook 接收服务已启动，监听 0.0.0.0:5000
+2026-05-30 11:15:01 [INFO] AI 自动回复已启用: model=qwen3.6-plus, max_tokens=512
+2026-05-30 11:15:01 [INFO] 支持的事件类型: memos.memo.created, memos.memo.updated, memos.memo.deleted, memos.memo.comment.created
+2026-05-30 11:15:31 [INFO] 收到事件: Memo 创建 (memos.memo.created)
+2026-05-30 11:15:31 [INFO] 收到事件: Memo 创建 (memos.memo.created)
+2026-05-30 11:15:31 [INFO] [创建] creator=users/test  uid=None  visibility=3  content=今天打游戏打的头晕
+2026-05-30 11:15:31 [INFO] [创建] creator=users/test  uid=None  visibility=3  content=今天打游戏打的头晕
+2026-05-30 11:15:48 [INFO] AI 回复成功: 游戏虽好玩，但头晕是身体在提醒你该休息啦。快放下设备喝点温水，闭眼放松一下眼睛和颈椎。照顾好自己，明天精神满满再战也不迟哦～
+2026-05-30 11:15:48 [INFO] AI 回复成功: 游戏虽好玩，但头晕是身体在提醒你该休息啦。快放下设备喝点温水，闭眼放松一下眼睛和颈椎。照顾好自己，明天精神满满再战也不迟哦～
+2026-05-30 11:15:48 [INFO] 已为 memos/CkN4tPeVTYiGpyQVjXkay6 自动添加评论
+2026-05-30 11:15:48 [INFO] 已为 memos/CkN4tPeVTYiGpyQVjXkay6 自动添加评论
+2026-05-30 11:15:48 [INFO] 收到事件: 评论创建 (memos.memo.comment.created)
+2026-05-30 11:15:48 [INFO] [评论] creator=users/AI-Bot  on_memo=memos/etdFbmYCan4eG79adKQdgi  content=游戏虽好玩，但头晕是身体在提醒你该休息啦。快放下设备喝点温水，闭眼放松一下眼睛和颈椎。照顾好自己，明天精神满满再战也不迟哦～
+2026-05-30 11:15:48 [INFO] 收到事件: 评论创建 (memos.memo.comment.created)
+2026-05-30 11:15:48 [INFO] [评论] creator=users/AI-Bot  on_memo=memos/etdFbmYCan4eG79adKQdgi  content=游戏虽好玩，但头晕是身体在提醒你该休息啦。快放下设备喝点温水，闭眼放松一下眼睛和颈椎。照顾好自己，明天精神满满再战也不迟哦～
+2026-05-30 11:16:37 [INFO] 收到事件: 评论创建 (memos.memo.comment.created)
+2026-05-30 11:16:37 [INFO] [评论] creator=users/test  on_memo=memos/kGfNgaBoqn6dNa9zt38WrZ  content=哈哈，好的呢
+2026-05-30 11:16:37 [INFO] 收到事件: 评论创建 (memos.memo.comment.created)
+2026-05-30 11:16:37 [INFO] [评论] creator=users/test  on_memo=memos/kGfNgaBoqn6dNa9zt38WrZ  content=哈哈，好的呢

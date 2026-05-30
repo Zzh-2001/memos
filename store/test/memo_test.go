@@ -119,6 +119,64 @@ func TestDeleteMemoStore(t *testing.T) {
 	ts.Close()
 }
 
+func TestDeleteMemoStoreRecursivelyDeletesNestedComments(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// Create parent memo A.
+	memoA, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "memo-a",
+		CreatorID:  user.ID,
+		Content:    "parent memo",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+
+	// Create comment B on A.
+	memoB, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "memo-b",
+		CreatorID:  user.ID,
+		Content:    "comment on A",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{
+		MemoID:        memoB.ID,
+		RelatedMemoID: memoA.ID,
+		Type:          store.MemoRelationComment,
+	})
+	require.NoError(t, err)
+
+	// Create nested comment C on B.
+	memoC, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "memo-c",
+		CreatorID:  user.ID,
+		Content:    "nested comment on B",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{
+		MemoID:        memoC.ID,
+		RelatedMemoID: memoB.ID,
+		Type:          store.MemoRelationComment,
+	})
+	require.NoError(t, err)
+
+	// Delete parent memo A; this should recursively delete B and C.
+	err = ts.DeleteMemo(ctx, &store.DeleteMemo{ID: memoA.ID})
+	require.NoError(t, err)
+
+	// Verify all memos are deleted.
+	allMemos, err := ts.ListMemos(ctx, &store.FindMemo{})
+	require.NoError(t, err)
+	require.Empty(t, allMemos)
+
+	ts.Close()
+}
+
 func TestMemoGetByID(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

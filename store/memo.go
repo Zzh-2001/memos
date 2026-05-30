@@ -2,7 +2,8 @@ package store
 
 import (
 	"context"
-	"errors"
+
+	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/base"
 
@@ -138,6 +139,18 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
 }
 
 func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemo) error {
+	// Recursively delete nested comments first.
+	commentType := MemoRelationComment
+	relations, err := s.ListMemoRelations(ctx, &FindMemoRelation{RelatedMemoID: &delete.ID, Type: &commentType})
+	if err != nil {
+		return errors.Wrap(err, "failed to list nested comments")
+	}
+	for _, relation := range relations {
+		if err := s.DeleteMemo(ctx, &DeleteMemo{ID: relation.MemoID}); err != nil {
+			return errors.Wrap(err, "failed to delete nested comment")
+		}
+	}
+
 	// Clean up memo_relation records where this memo is either the source or target.
 	if err := s.driver.DeleteMemoRelation(ctx, &DeleteMemoRelation{MemoID: &delete.ID}); err != nil {
 		return err

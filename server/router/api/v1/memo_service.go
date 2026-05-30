@@ -33,6 +33,19 @@ func isSSESuppressed(ctx context.Context) bool {
 	return ok && v
 }
 
+// suppressWebhookKey is a context key used to suppress the webhook dispatch from
+// CreateMemo when it is called internally (e.g., from CreateMemoComment).
+type suppressWebhookKey struct{}
+
+func withSuppressWebhook(ctx context.Context) context.Context {
+	return context.WithValue(ctx, suppressWebhookKey{}, true)
+}
+
+func isWebhookSuppressed(ctx context.Context) bool {
+	v, ok := ctx.Value(suppressWebhookKey{}).(bool)
+	return ok && v
+}
+
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -127,9 +140,11 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
-	// Try to dispatch webhook when memo is created.
-	if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
-		slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
+	// Try to dispatch webhook when memo is created (skipped when called from CreateMemoComment).
+	if !isWebhookSuppressed(ctx) {
+		if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
+			slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
+		}
 	}
 
 	// Broadcast live refresh event (skipped when called from CreateMemoComment).
@@ -593,7 +608,7 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 
 	// Create the memo comment first; suppress the generic memo.created SSE event
 	// since CreateMemoComment broadcasts memo.comment.created for the parent instead.
-	memoComment, err := s.CreateMemo(withSuppressMentionNotifications(withSuppressSSE(ctx)), &v1pb.CreateMemoRequest{
+	memoComment, err := s.CreateMemo(withSuppressMentionNotifications(withSuppressSSE(withSuppressWebhook(ctx))), &v1pb.CreateMemoRequest{
 		Memo:   request.Comment,
 		MemoId: request.CommentId,
 	})
