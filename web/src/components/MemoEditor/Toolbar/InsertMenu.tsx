@@ -16,6 +16,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "react-use";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import { useReverseGeocoding } from "@/components/map";
+import { useInstance } from "@/contexts/InstanceContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -74,23 +75,32 @@ const InsertMenu = (props: InsertMenuProps) => {
     setPlaceholder,
   } = location;
 
+  const { generalSetting } = useInstance();
+  const amapKey = generalSetting?.amapKey || "";
+
   const [debouncedPosition, setDebouncedPosition] = useState<LatLng | undefined>(undefined);
 
   useDebounce(
     () => {
-      setDebouncedPosition(locationState.position);
+      if (!amapKey) {
+        setDebouncedPosition(locationState.position);
+      }
     },
     1000,
-    [locationState.position],
+    [locationState.position, amapKey],
   );
 
-  const { data: displayName } = useReverseGeocoding(debouncedPosition?.lat, debouncedPosition?.lng);
+  // Nominatim 仅作为无高德 Key 时的备选逆地理编码
+  const { data: displayName } = useReverseGeocoding(
+    amapKey ? undefined : debouncedPosition?.lat,
+    amapKey ? undefined : debouncedPosition?.lng,
+  );
 
   useEffect(() => {
-    if (displayName) {
+    if (displayName && !amapKey) {
       setPlaceholder(displayName);
     }
-  }, [displayName, setPlaceholder]);
+  }, [displayName, setPlaceholder, amapKey]);
 
   const isUploading = selectingFlag || isUploadingProp;
 
@@ -113,6 +123,13 @@ const InsertMenu = (props: InsertMenuProps) => {
       }
     }
   }, [initialLocation, locationInitialized, handleLocationPositionChange]);
+
+  const handleLocationNameResolved = useCallback(
+    (name: string) => {
+      if (name) setPlaceholder(name);
+    },
+    [setPlaceholder],
+  );
 
   const handleLocationConfirm = useCallback(() => {
     const newLocation = getLocation();
@@ -246,6 +263,7 @@ const InsertMenu = (props: InsertMenuProps) => {
         onPositionChange={handleLocationPositionChange}
         onUpdateCoordinate={updateCoordinate}
         onPlaceholderChange={setPlaceholder}
+        onNameResolved={handleLocationNameResolved}
         onCancel={handleLocationCancel}
         onConfirm={handleLocationConfirm}
       />

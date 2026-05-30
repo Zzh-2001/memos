@@ -16,6 +16,7 @@ interface LocationDialogProps {
   onPositionChange: (position: LatLng) => void;
   onUpdateCoordinate: (type: "lat" | "lng", value: string) => void;
   onPlaceholderChange: (placeholder: string) => void;
+  onNameResolved?: (name: string) => void;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -27,6 +28,7 @@ export const LocationDialog = ({
   onPositionChange,
   onUpdateCoordinate,
   onPlaceholderChange,
+  onNameResolved,
   onCancel,
   onConfirm,
 }: LocationDialogProps) => {
@@ -47,7 +49,7 @@ export const LocationDialog = ({
         </VisuallyHidden>
         <div className="flex flex-col">
           <div className="w-full h-64 overflow-hidden rounded-t-md bg-muted/30">
-            <LocationPicker className="h-full" latlng={position} onChange={onPositionChange} />
+            <LocationPicker className="h-full" latlng={position} onChange={onPositionChange} onNameResolved={onNameResolved} />
           </div>
           <div className="w-full flex flex-col p-3 gap-3">
             <div className="grid grid-cols-2 gap-3">

@@ -204,6 +204,7 @@ interface LocationPickerProps {
   readonly?: boolean;
   latlng?: LatLng;
   onChange?: (position: LatLng) => void;
+  onNameResolved?: (name: string) => void;
   className?: string;
 }
 
@@ -333,13 +334,14 @@ const LocationSearchBox = ({ onSelect }: { onSelect: (latlng: LatLng, name: stri
 };
 
 // ── 主组件 ──
-const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnLocationChange, className }: LocationPickerProps) => {
+const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnLocationChange, onNameResolved, className }: LocationPickerProps) => {
   const { generalSetting } = useInstance();
   const amapKey = generalSetting?.amapKey || "";
   const [mapCenter, setMapCenter] = useState<LatLng>(latlng || DEFAULT_CENTER_LAT_LNG);
   const [address, setAddress] = useState("");
   const [selectedName, setSelectedName] = useState<string>("");
   const hasInitRef = useRef(false);
+  const nameFromSearchRef = useRef(false);
 
   // 反向地理编码
   const updateAddress = useCallback(
@@ -379,6 +381,7 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
       setMapCenter(pos);
       onChange(pos);
       setSelectedName("");
+      nameFromSearchRef.current = false;
       updateAddress(pos.lat, pos.lng);
     },
     [onChange, updateAddress],
@@ -389,9 +392,11 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
       setMapCenter(pos);
       onChange(pos);
       setSelectedName(name);
+      nameFromSearchRef.current = true;
+      onNameResolved?.(name);
       updateAddress(pos.lat, pos.lng);
     },
-    [onChange, updateAddress],
+    [onChange, updateAddress, onNameResolved],
   );
 
   const handleLocateMe = useCallback(() => {
@@ -402,12 +407,20 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
         setMapCenter(ll);
         onChange(ll);
         setSelectedName("");
+        nameFromSearchRef.current = false;
         updateAddress(ll.lat, ll.lng);
       },
       () => {},
       { enableHighAccuracy: false, timeout: 5000 },
     );
   }, [onChange, updateAddress]);
+
+  // 高德逆地理编码完成后，通知外部（仅地图点击/定位场景，搜索场景已在 handleSelectFromSearch 中直接通知）
+  useEffect(() => {
+    if (address && onNameResolved && !nameFromSearchRef.current) {
+      onNameResolved(address);
+    }
+  }, [address, onNameResolved]);
 
   const statusLabel = readOnly ? "已选位置" : latlng ? "已选位置" : "点击地图选择位置";
 
