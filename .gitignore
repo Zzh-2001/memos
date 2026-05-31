@@ -38,4 +38,8 @@ scripts/webhook/config.json
 # 临时数据文件夹
 dev_data/
 
+# plan计划
 .qoder/
+
+# 日志文件
+scripts/webhook/webhook.log
