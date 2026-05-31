@@ -38,7 +38,7 @@ scripts/webhook/config.json
 # 临时数据文件夹
 dev_data/
 
-# plan计划
+# Qoder AI
 .qoder/
 
 # 日志文件
