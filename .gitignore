@@ -36,4 +36,7 @@ web/coverage/
 scripts/webhook/config.json
 
 # 临时数据文件夹
-dev_data/.qoder/
+dev_data/
+
+# Qoder AI
+.qoder/
