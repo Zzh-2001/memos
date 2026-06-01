@@ -652,6 +652,9 @@
     "webhook-receiver": {
       "label": "Receiver"
     },
+    "webhook-script": {
+      "label": "Edit Script"
+    },
     "tags": {
       "label": "Tags",
       "title": "Tag metadata",

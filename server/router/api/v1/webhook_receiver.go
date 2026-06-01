@@ -232,6 +232,23 @@ func (m *webhookReceiverManager) Shutdown() {
 	m.logHub.Close()
 }
 
+// ReadScript reads the receiver.py source file.
+func (m *webhookReceiverManager) ReadScript() (string, error) {
+	data, err := os.ReadFile(m.scriptPath)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to read script file")
+	}
+	return string(data), nil
+}
+
+// WriteScript overwrites the receiver.py source file.
+func (m *webhookReceiverManager) WriteScript(content string) error {
+	if err := os.WriteFile(m.scriptPath, []byte(content), 0o755); err != nil {
+		return errors.Wrap(err, "failed to write script file")
+	}
+	return nil
+}
+
 // ReadConfig reads and returns the config.json file.
 func (m *webhookReceiverManager) ReadConfig() (*webhookReceiverConfig, error) {
 	data, err := os.ReadFile(m.configPath)
@@ -430,6 +447,8 @@ func (s *APIV1Service) RegisterWebhookReceiverRoutes(g *echo.Group) {
 	g.POST("/api/v1/instance/webhook-receiver/start", wrap(s.handleStartWebhookReceiver))
 	g.POST("/api/v1/instance/webhook-receiver/stop", wrap(s.handleStopWebhookReceiver))
 	g.GET("/api/v1/instance/webhook-receiver/logs", wrap(s.handleWebhookReceiverLogs))
+	g.GET("/api/v1/instance/webhook-receiver/script", wrap(s.handleGetWebhookReceiverScript))
+	g.PUT("/api/v1/instance/webhook-receiver/script", wrap(s.handleUpdateWebhookReceiverScript))
 }
 
 func (s *APIV1Service) webhookReceiverMgr() *webhookReceiverManager {
@@ -619,4 +638,30 @@ func (s *APIV1Service) handleWebhookReceiverLogs(c *echo.Context, _ *store.User)
 			}
 		}
 	}
+}
+
+func (s *APIV1Service) handleGetWebhookReceiverScript(c *echo.Context, _ *store.User) error {
+	mgr := s.webhookReceiverMgr()
+	content, err := mgr.ReadScript()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, map[string]string{"content": content})
+}
+
+func (s *APIV1Service) handleUpdateWebhookReceiverScript(c *echo.Context, _ *store.User) error {
+	mgr := s.webhookReceiverMgr()
+	var req struct {
+		Content string `json:"content"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+	if req.Content == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "content is required")
+	}
+	if err := mgr.WriteScript(req.Content); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, map[string]string{"message": "ok"})
 }

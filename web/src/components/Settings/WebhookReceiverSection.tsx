@@ -1,4 +1,4 @@
-import { CirclePauseIcon, CirclePlayIcon, LoaderIcon, PauseIcon, PlayIcon, TrashIcon, XIcon } from "lucide-react";
+import { CirclePauseIcon, CirclePlayIcon, EyeIcon, EyeOffIcon, LoaderIcon, PauseIcon, PlayIcon, TrashIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { getAccessToken } from "@/auth-state";
@@ -104,6 +104,8 @@ const WebhookReceiverSection = () => {
   const [status, setStatus] = useState<ReceiverStatus>({ running: false });
   const [saving, setSaving] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [showPat, setShowPat] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
   const [logsExpanded, setLogsExpanded] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [logPaused, setLogPaused] = useState(false);
@@ -321,22 +323,32 @@ const WebhookReceiverSection = () => {
             onChange={(e) => updateField("port", parseInt(e.target.value) || 5000)}
           />
         </SettingRow>
-        <SettingRow label="Memos 实例地址" description="后端 API 地址，如 http://localhost:8081">
+        <SettingRow label="Memos 实例地址" description="后端 API 地址">
           <Input
             className="w-64"
-            placeholder="http://localhost:8081"
+            placeholder="例如：http://localhost:8081"
             value={form.memos_url}
             onChange={(e) => updateField("memos_url", e.target.value)}
           />
         </SettingRow>
         <SettingRow label="Personal Access Token" description={patHint ? `当前: ${patHint}` : "未设置"}>
-          <Input
-            type="password"
-            className="w-64"
-            placeholder={patHint ? "留空保持不变" : "memos_pat_..."}
-            value={form.pat}
-            onChange={(e) => updateField("pat", e.target.value)}
-          />
+          <div className="relative w-64">
+            <Input
+              type={showPat ? "text" : "password"}
+              className="w-full pr-9"
+              placeholder={patHint ? "留空保持不变" : "memos_pat_..."}
+              value={form.pat}
+              onChange={(e) => updateField("pat", e.target.value)}
+            />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onClick={() => setShowPat((v) => !v)}
+              tabIndex={-1}
+            >
+              {showPat ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+            </button>
+          </div>
         </SettingRow>
         <SettingRow label="HMAC 签名密钥" description="可选，留空不校验">
           <Input
@@ -370,13 +382,23 @@ const WebhookReceiverSection = () => {
           />
         </SettingRow>
         <SettingRow label="API Key" description={apiKeyHint ? `当前: ${apiKeyHint}` : "未设置"}>
-          <Input
-            type="password"
-            className="w-64"
-            placeholder={apiKeyHint ? "留空保持不变" : "sk-..."}
-            value={form.ai_api_key}
-            onChange={(e) => updateField("ai_api_key", e.target.value)}
-          />
+          <div className="relative w-64">
+            <Input
+              type={showApiKey ? "text" : "password"}
+              className="w-full pr-9"
+              placeholder={apiKeyHint ? "留空保持不变" : "sk-..."}
+              value={form.ai_api_key}
+              onChange={(e) => updateField("ai_api_key", e.target.value)}
+            />
+            <button
+              type="button"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onClick={() => setShowApiKey((v) => !v)}
+              tabIndex={-1}
+            >
+              {showApiKey ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+            </button>
+          </div>
         </SettingRow>
         <SettingRow label="模型名称">
           <Input
@@ -447,11 +469,17 @@ const WebhookReceiverSection = () => {
             className="w-full h-64 overflow-y-auto bg-zinc-900 text-zinc-200 rounded-lg p-3 font-mono text-xs leading-5"
           >
             {logs.length === 0 && <span className="text-zinc-500">暂无日志</span>}
-            {logs.map((line, i) => (
-              <div key={i} className={line.includes("[WARNING]") || line.includes("[WARN]") ? "text-yellow-400" : line.includes("[ERROR]") ? "text-red-400" : ""}>
-                {line}
-              </div>
-            ))}
+            {logs.map((line, i) => {
+              // "2024-01-01 12:00:00 [LEVEL] message" → "12:00:00 [LEVEL] message"
+              const display = line.replace(/^\d{4}-\d{2}-\d{2} /, "");
+              const isWarn = line.includes("[WARNING]") || line.includes("[WARN]");
+              const isError = line.includes("[ERROR]");
+              return (
+                <div key={i} className={isError ? "text-red-400" : isWarn ? "text-yellow-400" : ""}>
+                  {display}
+                </div>
+              );
+            })}
             <div ref={logEndRef} />
           </div>
         )}

@@ -1,6 +1,7 @@
 import {
   CogIcon,
   DatabaseIcon,
+  FileCodeIcon,
   HeartHandshakeIcon,
   KeyIcon,
   LibraryIcon,
@@ -26,6 +27,7 @@ import StorageSection from "@/components/Settings/StorageSection";
 import TagsSection from "@/components/Settings/TagsSection";
 import GlobalWebhookSection from "@/components/Settings/GlobalWebhookSection";
 import WebhookReceiverSection from "@/components/Settings/WebhookReceiverSection";
+import WebhookScriptSection from "@/components/Settings/WebhookScriptSection";
 import WebhookSection from "@/components/Settings/WebhookSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -35,10 +37,10 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso" | "tags" | "ai" | "global-webhook" | "webhook-receiver";
+type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso" | "tags" | "ai" | "global-webhook" | "webhook-receiver" | "webhook-script";
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "tags", "storage", "sso", "ai", "global-webhook", "webhook-receiver"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "tags", "storage", "sso", "ai", "global-webhook", "webhook-receiver", "webhook-script"];
 const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
 
 const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
@@ -56,6 +58,7 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   ai: HeartHandshakeIcon,
   "global-webhook": WebhookIcon,
   "webhook-receiver": WebhookIcon,
+  "webhook-script": FileCodeIcon,
 };
 
 const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
@@ -71,6 +74,7 @@ const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
   ai: AISection,
   "global-webhook": GlobalWebhookSection,
   "webhook-receiver": WebhookReceiverSection,
+  "webhook-script": WebhookScriptSection,
 };
 
 const Setting = () => {

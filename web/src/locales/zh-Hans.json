@@ -615,6 +615,9 @@
     "webhook-receiver": {
       "label": "接收器"
     },
+    "webhook-script": {
+      "label": "编辑脚本"
+    },
     "tags": {
       "label": "标签",
       "title": "标签元数据",

@@ -5,7 +5,7 @@ Memos Webhook 接收处理脚本（支持 AI 自动回复）
 当有新帖子创建时，读取帖子内容（文字+图片+地理位置），
 调用 OpenAI 兼容 API 生成回复，并自动创建评论。
 
-用法:
+用法：
   # 配置文件方式（推荐）
   cp config.example.json config.json   # 编辑 config.json 填入实际值
   python3 receiver.py
@@ -28,6 +28,7 @@ import json
 import logging
 import os
 import sys
+import threading
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
@@ -59,7 +60,12 @@ AI_MODEL = ""
 AI_SYSTEM_PROMPT = ""
 AI_MAX_TOKENS = 512
 AI_IMAGE_MAX_SIZE = 2048
+AI_REPLY_DELAY = 120  # 秒，发帖后等待再回复，期间编辑的内容会被采用
 CURRENT_USER_NAME = ""
+
+# 待回复计时器：memo_name → Timer
+_pending_timers: dict[str, threading.Timer] = {}
+_pending_timers_lock = threading.Lock()
 
 
 # ──────────────────────────────────────────────
@@ -113,11 +119,11 @@ def load_config(args: argparse.Namespace) -> dict[str, Any]:
         try:
             with open(config_path, encoding="utf-8") as f:
                 cfg = json.load(f)
-            logging.info("已加载配置文件: %s", config_path)
+            logging.debug("已加载配置文件: %s", config_path)
         except (json.JSONDecodeError, OSError) as e:
             logging.warning("读取配置文件失败: %s", e)
     else:
-        logging.info("未找到配置文件 %s，使用默认值", config_path)
+        logging.debug("未找到配置文件 %s，使用默认值", config_path)
 
     # 2. 环境变量覆盖
     for cfg_key, env_name in ENV_MAP.items():
@@ -308,6 +314,23 @@ def call_ai_model(messages: list[dict[str, Any]]) -> str:
 # Memos API 调用
 # ──────────────────────────────────────────────
 
+def fetch_memo(memo_name: str) -> dict[str, Any] | None:
+    """从 Memos API 获取帖子当前内容（含编辑后的最新版本）"""
+    if not MEMOS_URL or not PAT:
+        return None
+    req = urllib.request.Request(
+        f"{MEMOS_URL}/api/v1/{memo_name}",
+        headers={"Authorization": f"Bearer {PAT}"},
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception as e:
+        logging.warning("获取帖子失败: %s, error=%s", memo_name, e)
+        return None
+
+
 def fetch_current_user() -> str:
     """使用 PAT 获取当前用户 resource name（如 users/admin）"""
     if not MEMOS_URL or not PAT:
@@ -379,62 +402,71 @@ def post_comment(memo_name: str, visibility: str, content: str) -> None:
 # 事件处理器
 # ──────────────────────────────────────────────
 
+def _do_ai_reply(memo_name: str, visibility: str) -> None:
+    """计时器触发：拉取最新帖子内容，调用 AI，发评论"""
+    with _pending_timers_lock:
+        _pending_timers.pop(memo_name, None)
+
+    memo = fetch_memo(memo_name)
+    if memo is None:
+        logging.info("AI 回复取消: %s 已删除或无法访问", memo_name)
+        return
+
+    messages = build_memo_messages(memo)
+    reply = call_ai_model(messages)
+    if reply:
+        post_comment(memo_name, visibility, reply)
+
+
 def on_memo_created(payload: dict[str, Any]) -> None:
     """Memo 新建时触发"""
     memo = payload.get("memo", {})
     logging.info(
-        "[创建] creator=%s  uid=%s  visibility=%s  content=%.80s",
+        "[新帖] %s  %.100s",
         payload.get("creator"),
-        memo.get("uid"),
-        memo.get("visibility"),
-        memo.get("content", ""),
+        memo.get("content", "(空)"),
     )
-    # 示例：把公开 Memo 写入文件归档
     if memo.get("visibility") == "PUBLIC":
         _append_to_archive(memo)
 
-    # AI 自动回复（跳过由脚本自己创建的 memo，防止无限递归）
+    memo_name = memo.get("name")
     if (
         AI_BASE_URL
-        and memo.get("name")
+        and memo_name
         and not memo.get("parent")
         and payload.get("creator") != CURRENT_USER_NAME
     ):
-        messages = build_memo_messages(memo)
-        reply = call_ai_model(messages)
-        if reply:
-            post_comment(memo.get("name"), memo.get("visibility", "PUBLIC"), reply)
+        visibility = memo.get("visibility", "PUBLIC")
+        with _pending_timers_lock:
+            timer = threading.Timer(AI_REPLY_DELAY, _do_ai_reply, args=[memo_name, visibility])
+            timer.daemon = True
+            timer.start()
+            _pending_timers[memo_name] = timer
+        logging.info("AI 回复已排队: %s，%d 秒后发送", memo_name, AI_REPLY_DELAY)
 
 
 def on_memo_updated(payload: dict[str, Any]) -> None:
     """Memo 更新时触发"""
     memo = payload.get("memo", {})
     logging.info(
-        "[更新] creator=%s  uid=%s  content=%.80s",
+        "[更新] %s  %.100s",
         payload.get("creator"),
-        memo.get("uid"),
-        memo.get("content", ""),
+        memo.get("content", "(空)"),
     )
 
 
 def on_memo_deleted(payload: dict[str, Any]) -> None:
     """Memo 删除时触发"""
-    memo = payload.get("memo", {})
-    logging.info(
-        "[删除] creator=%s  uid=%s",
-        payload.get("creator"),
-        memo.get("uid"),
-    )
+    logging.info("[删除] %s", payload.get("creator"))
 
 
 def on_comment_created(payload: dict[str, Any]) -> None:
     """评论创建时触发"""
     memo = payload.get("memo", {})
     logging.info(
-        "[评论] creator=%s  on_memo=%s  content=%.80s",
+        "[评论] %s  %.100s",
         payload.get("creator"),
-        memo.get("name"),
-        memo.get("content", ""),
+        memo.get("content", "(空)"),
     )
 
 
@@ -504,9 +536,6 @@ class WebhookHandler(BaseHTTPRequestHandler):
             return
 
         activity_type = payload.get("activityType", "")
-        type_label = ACTIVITY_TYPES.get(activity_type, activity_type)
-        logging.info("收到事件: %s (%s)", type_label, activity_type)
-
         handler = HANDLERS.get(activity_type)
         if handler:
             try:
@@ -577,7 +606,7 @@ def main() -> None:
 
     # 将配置注入模块全局变量
     global MEMOS_URL, PAT, AI_BASE_URL, AI_API_KEY, AI_MODEL, AI_SYSTEM_PROMPT
-    global AI_MAX_TOKENS, AI_IMAGE_MAX_SIZE, CURRENT_USER_NAME
+    global AI_MAX_TOKENS, AI_IMAGE_MAX_SIZE, AI_REPLY_DELAY, CURRENT_USER_NAME
     WebhookHandler.secret = cfg.get("secret", "")
     MEMOS_URL = str(cfg.get("memos_url", "")).rstrip("/")
     PAT = cfg.get("pat", "")
@@ -587,6 +616,7 @@ def main() -> None:
     AI_SYSTEM_PROMPT = cfg.get("ai_system_prompt", DEFAULT_SYSTEM_PROMPT)
     AI_MAX_TOKENS = int(cfg.get("ai_max_tokens", 512))
     AI_IMAGE_MAX_SIZE = int(cfg.get("ai_image_max_size", 1024))
+    AI_REPLY_DELAY = int(cfg.get("ai_reply_delay", 120))
     CURRENT_USER_NAME = fetch_current_user()
 
     port = cfg.get("port", DEFAULT_PORT)
@@ -596,7 +626,7 @@ def main() -> None:
         logging.info("HMAC 签名校验已启用")
     if AI_BASE_URL:
         logging.info("AI 自动回复已启用: model=%s, max_tokens=%d", AI_MODEL, AI_MAX_TOKENS)
-    logging.info("支持的事件类型: %s", ", ".join(ACTIVITY_TYPES.keys()))
+    logging.debug("支持的事件类型: %s", ", ".join(ACTIVITY_TYPES.keys()))
 
     try:
         server.serve_forever()
