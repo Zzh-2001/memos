@@ -259,6 +259,23 @@ func (m *webhookReceiverManager) WriteConfig(cfg *webhookReceiverConfig) error {
 	return nil
 }
 
+// ReadScript reads and returns the receiver.py script content.
+func (m *webhookReceiverManager) ReadScript() (string, error) {
+	data, err := os.ReadFile(m.scriptPath)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to read script file")
+	}
+	return string(data), nil
+}
+
+// WriteScript writes the receiver.py script content.
+func (m *webhookReceiverManager) WriteScript(content string) error {
+	if err := os.WriteFile(m.scriptPath, []byte(content), 0o644); err != nil {
+		return errors.Wrap(err, "failed to write script file")
+	}
+	return nil
+}
+
 // ReadRecentLogs returns the last N lines from the log file.
 func (m *webhookReceiverManager) ReadRecentLogs(n int) []string {
 	data, err := os.ReadFile(m.logPath)
@@ -379,6 +396,8 @@ func (h *logHub) Close() {
 //	POST   /api/v1/instance/webhook-receiver/start    start the process
 //	POST   /api/v1/instance/webhook-receiver/stop     stop the process
 //	GET    /api/v1/instance/webhook-receiver/logs      SSE log stream
+//	GET    /api/v1/instance/webhook-receiver/script    read receiver.py script
+//	PUT    /api/v1/instance/webhook-receiver/script    write receiver.py script
 func (s *APIV1Service) RegisterWebhookReceiverRoutes(g *echo.Group) {
 	authenticator := auth.NewAuthenticator(s.Store, s.Secret)
 
@@ -414,6 +433,8 @@ func (s *APIV1Service) RegisterWebhookReceiverRoutes(g *echo.Group) {
 	g.POST("/api/v1/instance/webhook-receiver/start", wrap(s.handleStartWebhookReceiver))
 	g.POST("/api/v1/instance/webhook-receiver/stop", wrap(s.handleStopWebhookReceiver))
 	g.GET("/api/v1/instance/webhook-receiver/logs", wrap(s.handleWebhookReceiverLogs))
+	g.GET("/api/v1/instance/webhook-receiver/script", wrap(s.handleGetWebhookReceiverScript))
+	g.PUT("/api/v1/instance/webhook-receiver/script", wrap(s.handleUpdateWebhookReceiverScript))
 }
 
 func (s *APIV1Service) webhookReceiverMgr() *webhookReceiverManager {
@@ -601,4 +622,27 @@ func (s *APIV1Service) handleWebhookReceiverLogs(c *echo.Context, _ *store.User)
 			}
 		}
 	}
+}
+
+func (s *APIV1Service) handleGetWebhookReceiverScript(c *echo.Context, _ *store.User) error {
+	mgr := s.webhookReceiverMgr()
+	content, err := mgr.ReadScript()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, map[string]string{"content": content})
+}
+
+func (s *APIV1Service) handleUpdateWebhookReceiverScript(c *echo.Context, _ *store.User) error {
+	mgr := s.webhookReceiverMgr()
+	var req struct {
+		Content string `json:"content"`
+	}
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request body")
+	}
+	if err := mgr.WriteScript(req.Content); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, map[string]string{"message": "ok"})
 }

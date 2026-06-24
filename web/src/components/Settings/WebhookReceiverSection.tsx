@@ -1,4 +1,4 @@
-import { CirclePauseIcon, CirclePlayIcon, EyeIcon, EyeOffIcon, LoaderIcon, PauseIcon, PlayIcon, TrashIcon, XIcon } from "lucide-react";
+import { CirclePauseIcon, CirclePlayIcon, EyeIcon, EyeOffIcon, FileCodeIcon, LoaderIcon, PauseIcon, PlayIcon, SaveIcon, TrashIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { getAccessToken } from "@/auth-state";
@@ -104,6 +104,11 @@ const WebhookReceiverSection = () => {
   const [logsExpanded, setLogsExpanded] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [logPaused, setLogPaused] = useState(false);
+  const [scriptExpanded, setScriptExpanded] = useState(false);
+  const [scriptContent, setScriptContent] = useState("");
+  const [scriptOriginal, setScriptOriginal] = useState("");
+  const [scriptSaving, setScriptSaving] = useState(false);
+  const [scriptLoading, setScriptLoading] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
   const logContainerRef = useRef<HTMLDivElement>(null);
 
@@ -141,6 +146,46 @@ const WebhookReceiverSection = () => {
       // ignore
     }
   }, []);
+
+  // Fetch script (lazy, on expand)
+  const fetchScript = useCallback(async () => {
+    setScriptLoading(true);
+    try {
+      const data = await apiFetch<{ content: string }>(`${API_BASE}/script`);
+      setScriptContent(data.content);
+      setScriptOriginal(data.content);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "加载脚本失败");
+    } finally {
+      setScriptLoading(false);
+    }
+  }, []);
+
+  // Save script
+  const handleSaveScript = async () => {
+    setScriptSaving(true);
+    try {
+      await apiFetch(`${API_BASE}/script`, {
+        method: "PUT",
+        body: JSON.stringify({ content: scriptContent }),
+      });
+      toast.success("脚本已保存");
+      setScriptOriginal(scriptContent);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "保存脚本失败");
+    } finally {
+      setScriptSaving(false);
+    }
+  };
+
+  // Toggle script editor
+  const handleToggleScript = () => {
+    const next = !scriptExpanded;
+    setScriptExpanded(next);
+    if (next && !scriptOriginal) {
+      fetchScript();
+    }
+  };
 
   // Initial load + periodic status refresh
   useEffect(() => {
@@ -421,6 +466,45 @@ const WebhookReceiverSection = () => {
           保存配置
         </Button>
       </div>
+
+      {/* ── 脚本编辑器 ── */}
+      <SettingGroup
+        title="receiver.py 脚本"
+        actions={
+          <div className="flex items-center gap-1">
+            {scriptExpanded && (
+              <Button
+                variant="default"
+                size="sm"
+                disabled={scriptContent === scriptOriginal || scriptSaving}
+                onClick={handleSaveScript}
+              >
+                {scriptSaving ? <LoaderIcon className="w-4 h-4 mr-1 animate-spin" /> : <SaveIcon className="w-4 h-4 mr-1" />}
+                保存脚本
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={handleToggleScript}>
+              {scriptExpanded ? <XIcon className="w-4 h-4" /> : <><FileCodeIcon className="w-4 h-4 mr-1" />编辑</>}
+            </Button>
+          </div>
+        }
+      >
+        {scriptExpanded && (
+          scriptLoading ? (
+            <div className="flex items-center justify-center h-64 text-muted-foreground">
+              <LoaderIcon className="w-5 h-5 mr-2 animate-spin" />
+              加载中...
+            </div>
+          ) : (
+            <Textarea
+              className="w-full h-96 font-mono text-xs leading-5 bg-zinc-900 text-zinc-200 border-zinc-700 focus-visible:ring-zinc-500"
+              value={scriptContent}
+              onChange={(e) => setScriptContent(e.target.value)}
+              spellCheck={false}
+            />
+          )
+        )}
+      </SettingGroup>
 
       {/* ── 实时日志 ── */}
       <SettingGroup
