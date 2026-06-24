@@ -247,6 +247,9 @@ message Memo {
   // Output only. The total number of comments including nested comments.
   int32 comment_count = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
 
+  // Whether AI auto-reply is enabled for this memo.
+  bool enable_ai_reply = 20 [(google.api.field_behavior) = OPTIONAL];
+
   // Computed properties of a memo.
   message Property {
     bool has_link = 1;

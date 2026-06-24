@@ -169,6 +169,9 @@
       "upload-file": "Upload file"
     },
     "no-changes-detected": "No changes detected",
+    "ai-reply-enabled": "AI auto-reply enabled",
+    "ai-reply-disabled": "AI auto-reply disabled",
+    "ai-reply-receiver-offline": "AI receiver is not running",
     "publish": "Publish",
     "save": "Save",
     "saving": "Saving...",

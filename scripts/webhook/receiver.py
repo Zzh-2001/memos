@@ -378,20 +378,23 @@ def post_comment(memo_name: str, visibility: str, content: str) -> None:
 def on_memo_created(payload: dict[str, Any]) -> None:
     """Memo 新建时触发"""
     memo = payload.get("memo", {})
+    enable_ai = memo.get("enable_ai_reply", False)
     logging.info(
-        "[创建] creator=%s  uid=%s  visibility=%s  content=%.80s",
+        "[创建] creator=%s  uid=%s  visibility=%s  enableAiReply=%s  content=%.80s",
         payload.get("creator"),
         memo.get("uid"),
         memo.get("visibility"),
+        enable_ai,
         memo.get("content", ""),
     )
     # 示例：把公开 Memo 写入文件归档
     if memo.get("visibility") == "PUBLIC":
         _append_to_archive(memo)
 
-    # AI 自动回复（跳过由脚本自己创建的 memo，防止无限递归）
+    # AI 自动回复（仅在用户开启时触发，跳过由脚本自己创建的 memo，防止无限递归）
     if (
-        AI_BASE_URL
+        enable_ai
+        and AI_BASE_URL
         and memo.get("name")
         and not memo.get("parent")
         and payload.get("creator") != CURRENT_USER_NAME

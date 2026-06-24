@@ -11,6 +11,9 @@ message MemoPayload {
 
   repeated string tags = 3;
 
+  // Whether AI auto-reply is enabled for this memo.
+  bool enable_ai_reply = 4;
+
   // The calculated properties from the memo content.
   message Property {
     bool has_link = 1;

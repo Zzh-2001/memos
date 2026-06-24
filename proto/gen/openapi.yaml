@@ -3049,6 +3049,9 @@ components:
                     type: integer
                     description: Output only. The total number of comments including nested comments.
                     format: int32
+                enableAiReply:
+                    type: boolean
+                    description: Whether AI auto-reply is enabled for this memo.
         MemoRelation:
             required:
                 - memo

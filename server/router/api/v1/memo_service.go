@@ -90,6 +90,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if request.Memo.Location != nil {
 		create.Payload.Location = convertLocationToStore(request.Memo.Location)
 	}
+	create.Payload.EnableAiReply = request.Memo.EnableAiReply
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
@@ -470,6 +471,10 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		} else if path == "location" {
 			payload := memo.Payload
 			payload.Location = convertLocationToStore(request.Memo.Location)
+			update.Payload = payload
+		} else if path == "enable_ai_reply" {
+			payload := memo.Payload
+			payload.EnableAiReply = request.Memo.EnableAiReply
 			update.Payload = payload
 		} else if path == "attachments" {
 			if err := s.setMemoAttachmentsInternal(ctx, memo, request.Memo.Attachments); err != nil {
@@ -858,7 +863,13 @@ func (s *APIV1Service) DispatchMemoCommentCreatedWebhook(ctx context.Context, co
 	if err != nil {
 		slog.Warn("Failed to get global webhooks for comment event", slog.Any("err", err))
 	}
+
+	dispatched := make(map[string]bool)
 	for _, hook := range webhooks {
+		if dispatched[hook.Url] {
+			continue
+		}
+		dispatched[hook.Url] = true
 		payload, err := convertMemoToWebhookPayload(commentMemo)
 		if err != nil {
 			return errors.Wrap(err, "failed to convert memo to webhook payload")
@@ -868,13 +879,18 @@ func (s *APIV1Service) DispatchMemoCommentCreatedWebhook(ctx context.Context, co
 		webhook.PostAsync(payload)
 	}
 	for _, hook := range globalHooks {
+		url := hook.GetUrl()
+		if dispatched[url] {
+			continue
+		}
+		dispatched[url] = true
 		payload, err := convertMemoToWebhookPayload(commentMemo)
 		if err != nil {
 			slog.Warn("Failed to convert memo to global webhook payload", slog.Any("err", err))
 			continue
 		}
 		payload.ActivityType = "memos.memo.comment.created"
-		payload.URL = hook.GetUrl()
+		payload.URL = url
 		webhook.PostAsync(payload)
 	}
 	return nil
@@ -897,7 +913,15 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 	if err != nil {
 		slog.Warn("Failed to get global webhooks", slog.Any("err", err))
 	}
+
+	// Collect unique URLs to avoid duplicate dispatches when the same endpoint
+	// is configured at both user level and global level.
+	dispatched := make(map[string]bool)
 	for _, hook := range webhooks {
+		if dispatched[hook.Url] {
+			continue
+		}
+		dispatched[hook.Url] = true
 		payload, err := convertMemoToWebhookPayload(memo)
 		if err != nil {
 			return errors.Wrap(err, "failed to convert memo to webhook payload")
@@ -909,13 +933,18 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 		webhook.PostAsync(payload)
 	}
 	for _, hook := range globalHooks {
+		url := hook.GetUrl()
+		if dispatched[url] {
+			continue
+		}
+		dispatched[url] = true
 		payload, err := convertMemoToWebhookPayload(memo)
 		if err != nil {
 			slog.Warn("Failed to convert memo to global webhook payload", slog.Any("err", err))
 			continue
 		}
 		payload.ActivityType = activityType
-		payload.URL = hook.GetUrl()
+		payload.URL = url
 		webhook.PostAsync(payload)
 	}
 	return nil

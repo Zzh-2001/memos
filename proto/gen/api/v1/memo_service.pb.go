@@ -252,7 +252,9 @@ type Memo struct {
 	// Optional. The location of the memo.
 	Location *Location `protobuf:"bytes,18,opt,name=location,proto3,oneof" json:"location,omitempty"`
 	// Output only. The total number of comments including nested comments.
-	CommentCount  int32 `protobuf:"varint,19,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
+	CommentCount int32 `protobuf:"varint,19,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
+	// Whether AI auto-reply is enabled for this memo.
+	EnableAiReply bool `protobuf:"varint,20,opt,name=enable_ai_reply,json=enableAiReply,proto3" json:"enable_ai_reply,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -404,6 +406,13 @@ func (x *Memo) GetCommentCount() int32 {
 		return x.CommentCount
 	}
 	return 0
+}
+
+func (x *Memo) GetEnableAiReply() bool {
+	if x != nil {
+		return x.EnableAiReply
+	}
+	return false
 }
 
 type Location struct {
@@ -2124,7 +2133,7 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\rreaction_type\x18\x04 \x01(\tB\x03\xe0A\x02R\freactionType\x12@\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime:X\xeaAU\n" +
-	"\x15memos.api.v1/Reaction\x12!memos/{memo}/reactions/{reaction}\x1a\x04name*\treactions2\breaction\"\xe8\b\n" +
+	"\x15memos.api.v1/Reaction\x12!memos/{memo}/reactions/{reaction}\x1a\x04name*\treactions2\breaction\"\x95\t\n" +
 	"\x04Memo\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12.\n" +
 	"\x05state\x18\x02 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x123\n" +
@@ -2149,7 +2158,8 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x11memos.api.v1/MemoH\x00R\x06parent\x88\x01\x01\x12\x1d\n" +
 	"\asnippet\x18\x11 \x01(\tB\x03\xe0A\x03R\asnippet\x12<\n" +
 	"\blocation\x18\x12 \x01(\v2\x16.memos.api.v1.LocationB\x03\xe0A\x01H\x01R\blocation\x88\x01\x01\x12(\n" +
-	"\rcomment_count\x18\x13 \x01(\x05B\x03\xe0A\x03R\fcommentCount\x1a\xac\x01\n" +
+	"\rcomment_count\x18\x13 \x01(\x05B\x03\xe0A\x03R\fcommentCount\x12+\n" +
+	"\x0fenable_ai_reply\x18\x14 \x01(\bB\x03\xe0A\x01R\renableAiReply\x1a\xac\x01\n" +
 	"\bProperty\x12\x19\n" +
 	"\bhas_link\x18\x01 \x01(\bR\ahasLink\x12\"\n" +
 	"\rhas_task_list\x18\x02 \x01(\bR\vhasTaskList\x12\x19\n" +
