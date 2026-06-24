@@ -316,7 +316,14 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onAudioRecorderClick={handleAudioRecorderClick} />
+          <EditorToolbar
+            onSave={handleSave}
+            onCancel={onCancel}
+            memo={memo}
+            memoName={memoName}
+            parentMemoName={parentMemoName}
+            onAudioRecorderClick={handleAudioRecorderClick}
+          />
         </div>
       </div>
     </>

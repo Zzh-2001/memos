@@ -10,5 +10,6 @@
   "ai_model": "xxx",
   "ai_system_prompt": "你是一个友好的社区助手。用户发布了一条帖子，请根据帖子内容给出简短、温暖、有意义的回复。回复使用中文，不超过3句话。",
   "ai_max_tokens": 512,
-  "ai_image_max_size": 2048
+  "ai_image_max_size": 2048,
+  "ai_reply_delay_seconds": 120
 }

@@ -29,50 +29,53 @@ import (
 
 // webhookReceiverConfig represents the configuration stored in config.json.
 type webhookReceiverConfig struct {
-	Port           int    `json:"port"`
-	Secret         string `json:"secret"`
-	Log            string `json:"log"`
-	Debug          bool   `json:"debug"`
-	MemosURL       string `json:"memos_url"`
-	PAT            string `json:"pat"`
-	AiBaseURL      string `json:"ai_base_url"`
-	AiAPIKey       string `json:"ai_api_key"`
-	AiModel        string `json:"ai_model"`
-	AiSystemPrompt string `json:"ai_system_prompt"`
-	AiMaxTokens    int    `json:"ai_max_tokens"`
-	AiImageMaxSize int    `json:"ai_image_max_size"`
+	Port               int    `json:"port"`
+	Secret             string `json:"secret"`
+	Log                string `json:"log"`
+	Debug              bool   `json:"debug"`
+	MemosURL           string `json:"memos_url"`
+	PAT                string `json:"pat"`
+	AiBaseURL          string `json:"ai_base_url"`
+	AiAPIKey           string `json:"ai_api_key"`
+	AiModel            string `json:"ai_model"`
+	AiSystemPrompt     string `json:"ai_system_prompt"`
+	AiMaxTokens        int    `json:"ai_max_tokens"`
+	AiImageMaxSize     int    `json:"ai_image_max_size"`
+	AiReplyDelaySeconds int   `json:"ai_reply_delay_seconds"`
 }
 
 // webhookReceiverConfigResponse is the API response with sensitive fields included.
 type webhookReceiverConfigResponse struct {
-	Port           int    `json:"port"`
-	Secret         string `json:"secret"`
-	Log            string `json:"log"`
-	Debug          bool   `json:"debug"`
-	MemosURL       string `json:"memos_url"`
-	PAT            string `json:"pat"`
-	AiBaseURL      string `json:"ai_base_url"`
-	AiAPIKey       string `json:"ai_api_key"`
-	AiModel        string `json:"ai_model"`
-	AiSystemPrompt string `json:"ai_system_prompt"`
-	AiMaxTokens    int    `json:"ai_max_tokens"`
-	AiImageMaxSize int    `json:"ai_image_max_size"`
+	Port                int    `json:"port"`
+	Secret              string `json:"secret"`
+	Log                 string `json:"log"`
+	Debug               bool   `json:"debug"`
+	MemosURL            string `json:"memos_url"`
+	PAT                 string `json:"pat"`
+	AiBaseURL           string `json:"ai_base_url"`
+	AiAPIKey            string `json:"ai_api_key"`
+	AiModel             string `json:"ai_model"`
+	AiSystemPrompt      string `json:"ai_system_prompt"`
+	AiMaxTokens         int    `json:"ai_max_tokens"`
+	AiImageMaxSize      int    `json:"ai_image_max_size"`
+	AiReplyDelaySeconds int    `json:"ai_reply_delay_seconds"`
 }
 
 // webhookReceiverConfigUpdateRequest is the API request for updating config.
 type webhookReceiverConfigUpdateRequest struct {
-	Port           *int    `json:"port,omitempty"`
-	Secret         *string `json:"secret,omitempty"`
-	Log            *string `json:"log,omitempty"`
-	Debug          *bool   `json:"debug,omitempty"`
-	MemosURL       *string `json:"memos_url,omitempty"`
-	PAT            *string `json:"pat,omitempty"`
-	AiBaseURL      *string `json:"ai_base_url,omitempty"`
-	AiAPIKey       *string `json:"ai_api_key,omitempty"`
-	AiModel        *string `json:"ai_model,omitempty"`
-	AiSystemPrompt *string `json:"ai_system_prompt,omitempty"`
-	AiMaxTokens    *int    `json:"ai_max_tokens,omitempty"`
-	AiImageMaxSize *int    `json:"ai_image_max_size,omitempty"`
+	Port                *int    `json:"port,omitempty"`
+	Secret              *string `json:"secret,omitempty"`
+	Log                 *string `json:"log,omitempty"`
+	Debug               *bool   `json:"debug,omitempty"`
+	MemosURL            *string `json:"memos_url,omitempty"`
+	PAT                 *string `json:"pat,omitempty"`
+	AiBaseURL           *string `json:"ai_base_url,omitempty"`
+	AiAPIKey            *string `json:"ai_api_key,omitempty"`
+	AiModel             *string `json:"ai_model,omitempty"`
+	AiSystemPrompt      *string `json:"ai_system_prompt,omitempty"`
+	AiMaxTokens         *int    `json:"ai_max_tokens,omitempty"`
+	AiImageMaxSize      *int    `json:"ai_image_max_size,omitempty"`
+	AiReplyDelaySeconds *int    `json:"ai_reply_delay_seconds,omitempty"`
 }
 
 // webhookReceiverStatusResponse is the API response for status queries.
@@ -310,11 +313,12 @@ func (m *webhookReceiverManager) streamOutput(r io.Reader, _ string) {
 
 func defaultWebhookReceiverConfig() *webhookReceiverConfig {
 	return &webhookReceiverConfig{
-		Port:           5000,
-		AiModel:        "gpt-4o",
-		AiSystemPrompt: "你是一个友好的社区助手。用户发布了一条帖子，请根据帖子内容给出简短、温暖、有意义的回复。回复使用中文，不超过3句话。",
-		AiMaxTokens:    512,
-		AiImageMaxSize: 2048,
+		Port:                5000,
+		AiModel:             "gpt-4o",
+		AiSystemPrompt:      "你是一个友好的社区助手。用户发布了一条帖子，请根据帖子内容给出简短、温暖、有意义的回复。回复使用中文，不超过3句话。",
+		AiMaxTokens:         512,
+		AiImageMaxSize:      2048,
+		AiReplyDelaySeconds: 120,
 	}
 }
 
@@ -388,40 +392,62 @@ func (h *logHub) Close() {
 // HTTP handlers
 // ──────────────────────────────────────────────
 
-// RegisterWebhookReceiverRoutes registers admin-only webhook receiver management endpoints.
+// RegisterWebhookReceiverRoutes registers webhook receiver management endpoints.
 //
-//	GET    /api/v1/instance/webhook-receiver/config   read config
-//	PUT    /api/v1/instance/webhook-receiver/config   update config
-//	GET    /api/v1/instance/webhook-receiver/status   get process status
-//	POST   /api/v1/instance/webhook-receiver/start    start the process
-//	POST   /api/v1/instance/webhook-receiver/stop     stop the process
-//	GET    /api/v1/instance/webhook-receiver/logs      SSE log stream
-//	GET    /api/v1/instance/webhook-receiver/script    read receiver.py script
-//	PUT    /api/v1/instance/webhook-receiver/script    write receiver.py script
+//	GET    /api/v1/instance/webhook-receiver/config   read config   (admin only)
+//	PUT    /api/v1/instance/webhook-receiver/config   update config (admin only)
+//	GET    /api/v1/instance/webhook-receiver/status   get process status (authenticated)
+//	POST   /api/v1/instance/webhook-receiver/start    start the process (admin only)
+//	POST   /api/v1/instance/webhook-receiver/stop     stop the process (admin only)
+//	GET    /api/v1/instance/webhook-receiver/logs      SSE log stream (admin only)
+//	GET    /api/v1/instance/webhook-receiver/script    read receiver.py script (admin only)
+//	PUT    /api/v1/instance/webhook-receiver/script    write receiver.py script (admin only)
 func (s *APIV1Service) RegisterWebhookReceiverRoutes(g *echo.Group) {
 	authenticator := auth.NewAuthenticator(s.Store, s.Secret)
 
-	// wrap provides admin authentication for each route.
+	// authenticate extracts the current user from the request.
+	authenticate := func(c *echo.Context) (*store.User, error) {
+		authHeader := c.Request().Header.Get("Authorization")
+		result := authenticator.Authenticate(c.Request().Context(), authHeader)
+		if result == nil {
+			return nil, echo.NewHTTPError(http.StatusUnauthorized, "authentication required")
+		}
+		var userID int32
+		if result.Claims != nil {
+			userID = result.Claims.UserID
+		} else if result.User != nil {
+			userID = result.User.ID
+		}
+		if userID == 0 {
+			return nil, echo.NewHTTPError(http.StatusUnauthorized, "authentication required")
+		}
+		user, err := s.Store.GetUser(c.Request().Context(), &store.FindUser{ID: &userID})
+		if err != nil || user == nil {
+			return nil, echo.NewHTTPError(http.StatusUnauthorized, "authentication required")
+		}
+		return user, nil
+	}
+
+	// wrap provides admin authentication for management routes.
 	wrap := func(h func(*echo.Context, *store.User) error) echo.HandlerFunc {
 		return func(c *echo.Context) error {
-			// Authenticate first.
-			authHeader := c.Request().Header.Get("Authorization")
-			result := authenticator.Authenticate(c.Request().Context(), authHeader)
-			if result == nil {
-				return echo.NewHTTPError(http.StatusUnauthorized, "authentication required")
+			user, err := authenticate(c)
+			if err != nil {
+				return err
 			}
-			var userID int32
-			if result.Claims != nil {
-				userID = result.Claims.UserID
-			} else if result.User != nil {
-				userID = result.User.ID
-			}
-			if userID == 0 {
-				return echo.NewHTTPError(http.StatusUnauthorized, "authentication required")
-			}
-			user, err := s.Store.GetUser(c.Request().Context(), &store.FindUser{ID: &userID})
-			if err != nil || user == nil || user.Role != store.RoleAdmin {
+			if user.Role != store.RoleAdmin {
 				return echo.NewHTTPError(http.StatusForbidden, "admin permission required")
+			}
+			return h(c, user)
+		}
+	}
+
+	// wrapAuth provides authentication for routes that any signed-in user may access.
+	wrapAuth := func(h func(*echo.Context, *store.User) error) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			user, err := authenticate(c)
+			if err != nil {
+				return err
 			}
 			return h(c, user)
 		}
@@ -429,7 +455,8 @@ func (s *APIV1Service) RegisterWebhookReceiverRoutes(g *echo.Group) {
 
 	g.GET("/api/v1/instance/webhook-receiver/config", wrap(s.handleGetWebhookReceiverConfig))
 	g.PUT("/api/v1/instance/webhook-receiver/config", wrap(s.handleUpdateWebhookReceiverConfig))
-	g.GET("/api/v1/instance/webhook-receiver/status", wrap(s.handleWebhookReceiverStatus))
+	g.GET("/api/v1/instance/webhook-receiver/status", wrapAuth(s.handleWebhookReceiverStatus))
+	g.GET("/api/v1/instance/webhook-receiver/ai-reply-status", wrapAuth(s.handleWebhookReceiverAIReplyStatus))
 	g.POST("/api/v1/instance/webhook-receiver/start", wrap(s.handleStartWebhookReceiver))
 	g.POST("/api/v1/instance/webhook-receiver/stop", wrap(s.handleStopWebhookReceiver))
 	g.GET("/api/v1/instance/webhook-receiver/logs", wrap(s.handleWebhookReceiverLogs))
@@ -482,18 +509,19 @@ func (s *APIV1Service) handleGetWebhookReceiverConfig(c *echo.Context, _ *store.
 	}
 
 	resp := webhookReceiverConfigResponse{
-		Port:           cfg.Port,
-		Secret:         cfg.Secret,
-		Log:            cfg.Log,
-		Debug:          cfg.Debug,
-		MemosURL:       cfg.MemosURL,
-		PAT:            cfg.PAT,
-		AiBaseURL:      cfg.AiBaseURL,
-		AiAPIKey:       cfg.AiAPIKey,
-		AiModel:        cfg.AiModel,
-		AiSystemPrompt: cfg.AiSystemPrompt,
-		AiMaxTokens:    cfg.AiMaxTokens,
-		AiImageMaxSize: cfg.AiImageMaxSize,
+		Port:                cfg.Port,
+		Secret:              cfg.Secret,
+		Log:                 cfg.Log,
+		Debug:               cfg.Debug,
+		MemosURL:            cfg.MemosURL,
+		PAT:                 cfg.PAT,
+		AiBaseURL:           cfg.AiBaseURL,
+		AiAPIKey:            cfg.AiAPIKey,
+		AiModel:             cfg.AiModel,
+		AiSystemPrompt:      cfg.AiSystemPrompt,
+		AiMaxTokens:         cfg.AiMaxTokens,
+		AiImageMaxSize:      cfg.AiImageMaxSize,
+		AiReplyDelaySeconds: cfg.AiReplyDelaySeconds,
 	}
 	return c.JSON(http.StatusOK, resp)
 }
@@ -553,6 +581,9 @@ func (s *APIV1Service) handleUpdateWebhookReceiverConfig(c *echo.Context, _ *sto
 	if req.AiImageMaxSize != nil {
 		cfg.AiImageMaxSize = *req.AiImageMaxSize
 	}
+	if req.AiReplyDelaySeconds != nil {
+		cfg.AiReplyDelaySeconds = *req.AiReplyDelaySeconds
+	}
 
 	if err := mgr.WriteConfig(cfg); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -563,6 +594,50 @@ func (s *APIV1Service) handleUpdateWebhookReceiverConfig(c *echo.Context, _ *sto
 func (s *APIV1Service) handleWebhookReceiverStatus(c *echo.Context, _ *store.User) error {
 	mgr := s.webhookReceiverMgr()
 	return c.JSON(http.StatusOK, mgr.Status())
+}
+
+func (s *APIV1Service) handleWebhookReceiverAIReplyStatus(c *echo.Context, _ *store.User) error {
+	memoName := c.QueryParam("memo_name")
+	if memoName == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "memo_name is required")
+	}
+
+	mgr := s.webhookReceiverMgr()
+	status := mgr.Status()
+	if !status.Running {
+		return c.JSON(http.StatusOK, map[string]any{
+			"code": 0,
+			"data": map[string]any{
+				"memo_name": memoName,
+				"status":    "none",
+			},
+		})
+	}
+
+	cfg, err := mgr.ReadConfig()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	port := cfg.Port
+	if port == 0 {
+		port = 5000
+	}
+
+	url := fmt.Sprintf("http://127.0.0.1:%d/ai-reply-status?memo_name=%s", port, memoName)
+	resp, err := http.Get(url)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	c.Response().Header().Set("Content-Type", "application/json")
+	return c.String(resp.StatusCode, string(body))
 }
 
 func (s *APIV1Service) handleStartWebhookReceiver(c *echo.Context, _ *store.User) error {

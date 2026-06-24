@@ -22,7 +22,9 @@ export interface EditorContentProps {
 export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
+  memo?: Memo;
   memoName?: string;
+  parentMemoName?: string;
   onAudioRecorderClick: () => void;
 }
 

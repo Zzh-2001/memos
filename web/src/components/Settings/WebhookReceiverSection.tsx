@@ -51,6 +51,7 @@ interface ReceiverConfig {
   ai_system_prompt: string;
   ai_max_tokens: number;
   ai_image_max_size: number;
+  ai_reply_delay_seconds: number;
 }
 
 interface ReceiverStatus {
@@ -72,6 +73,7 @@ interface FormState {
   ai_system_prompt: string;
   ai_max_tokens: number;
   ai_image_max_size: number;
+  ai_reply_delay_seconds: number;
 }
 
 const DEFAULT_FORM: FormState = {
@@ -87,6 +89,7 @@ const DEFAULT_FORM: FormState = {
   ai_system_prompt: "",
   ai_max_tokens: 512,
   ai_image_max_size: 2048,
+  ai_reply_delay_seconds: 120,
 };
 
 // ──────────────────────────────────────────────
@@ -129,6 +132,7 @@ const WebhookReceiverSection = () => {
         ai_system_prompt: cfg.ai_system_prompt,
         ai_max_tokens: cfg.ai_max_tokens,
         ai_image_max_size: cfg.ai_image_max_size,
+        ai_reply_delay_seconds: cfg.ai_reply_delay_seconds,
       };
       setForm(formState);
       setOriginal(formState);
@@ -455,6 +459,17 @@ const WebhookReceiverSection = () => {
             className="w-24"
             value={form.ai_image_max_size}
             onChange={(e) => updateField("ai_image_max_size", parseInt(e.target.value) || 2048)}
+          />
+        </SettingRow>
+        <SettingRow label="回复延迟时间" description="帖子发布后延迟多少秒再触发 AI 回复（0-3600）">
+          <Input
+            type="number"
+            className="w-24"
+            value={form.ai_reply_delay_seconds}
+            onChange={(e) => {
+              const value = parseInt(e.target.value) || 0;
+              updateField("ai_reply_delay_seconds", Math.max(0, Math.min(3600, value)));
+            }}
           />
         </SettingRow>
       </SettingGroup>

@@ -131,7 +131,7 @@ export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}, option
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextPageToken || undefined,
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 10, // 10 seconds - improved realtime for collaborative updates
     gcTime: 1000 * 60 * 5,
     enabled: options?.enabled ?? true,
   });
@@ -256,6 +256,6 @@ export function useMemoComments(name: string, options?: { enabled?: boolean; pag
       return response;
     },
     enabled: options?.enabled ?? true,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 10, // 10 seconds - improved realtime for collaborative comments
   });
 }

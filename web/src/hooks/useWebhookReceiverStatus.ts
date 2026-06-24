@@ -10,7 +10,9 @@ const defaultStatus: ReceiverStatus = { running: false };
 
 /**
  * Fetches the webhook receiver process status from the backend.
- * Returns `running: false` if the API is unreachable (e.g. non-admin user).
+ * Available to any signed-in user so that non-admin users can know whether
+ * AI auto-reply can be enabled for a memo.
+ * Returns `running: false` if the API is unreachable.
  */
 export default function useWebhookReceiverStatus(): ReceiverStatus {
   const [status, setStatus] = useState<ReceiverStatus>(defaultStatus);

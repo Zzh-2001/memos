@@ -14,7 +14,7 @@ import (
 
 const (
 	// sseHeartbeatInterval is the interval between heartbeat pings to keep the connection alive.
-	sseHeartbeatInterval = 30 * time.Second
+	sseHeartbeatInterval = 15 * time.Second
 )
 
 type sseRouteRegistrar interface {
