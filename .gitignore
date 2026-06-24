@@ -37,6 +37,7 @@ scripts/webhook/config.json
 
 # Webhook receiver runtime state
 scripts/webhook/ai_replied_memos.json
+scripts/webhook/memo_archive.jsonl
 
 # 临时数据文件夹
 dev_data/
