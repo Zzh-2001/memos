@@ -43,18 +43,16 @@ type webhookReceiverConfig struct {
 	AiImageMaxSize int    `json:"ai_image_max_size"`
 }
 
-// webhookReceiverConfigResponse is the API response with masked sensitive fields.
+// webhookReceiverConfigResponse is the API response with sensitive fields included.
 type webhookReceiverConfigResponse struct {
 	Port           int    `json:"port"`
 	Secret         string `json:"secret"`
 	Log            string `json:"log"`
 	Debug          bool   `json:"debug"`
 	MemosURL       string `json:"memos_url"`
-	PATSet         bool   `json:"pat_set"`
-	PATHint        string `json:"pat_hint"`
+	PAT            string `json:"pat"`
 	AiBaseURL      string `json:"ai_base_url"`
-	AiAPIKeySet    bool   `json:"ai_api_key_set"`
-	AiAPIKeyHint   string `json:"ai_api_key_hint"`
+	AiAPIKey       string `json:"ai_api_key"`
 	AiModel        string `json:"ai_model"`
 	AiSystemPrompt string `json:"ai_system_prompt"`
 	AiMaxTokens    int    `json:"ai_max_tokens"`
@@ -370,20 +368,6 @@ func (h *logHub) Close() {
 }
 
 // ──────────────────────────────────────────────
-// Mask helpers
-// ──────────────────────────────────────────────
-
-func maskSecret(s string) string {
-	if len(s) <= 8 {
-		if len(s) == 0 {
-			return ""
-		}
-		return s[:1] + "***"
-	}
-	return s[:4] + "***" + s[len(s)-3:]
-}
-
-// ──────────────────────────────────────────────
 // HTTP handlers
 // ──────────────────────────────────────────────
 
@@ -482,11 +466,9 @@ func (s *APIV1Service) handleGetWebhookReceiverConfig(c *echo.Context, _ *store.
 		Log:            cfg.Log,
 		Debug:          cfg.Debug,
 		MemosURL:       cfg.MemosURL,
-		PATSet:         cfg.PAT != "",
-		PATHint:        maskSecret(cfg.PAT),
+		PAT:            cfg.PAT,
 		AiBaseURL:      cfg.AiBaseURL,
-		AiAPIKeySet:    cfg.AiAPIKey != "",
-		AiAPIKeyHint:   maskSecret(cfg.AiAPIKey),
+		AiAPIKey:       cfg.AiAPIKey,
 		AiModel:        cfg.AiModel,
 		AiSystemPrompt: cfg.AiSystemPrompt,
 		AiMaxTokens:    cfg.AiMaxTokens,

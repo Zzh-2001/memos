@@ -85,7 +85,7 @@ const InstanceSection = () => {
   return (
     <SettingSection title={t("setting.system.label")}>
       <SettingGroup title={t("common.basic")}>
-        <SettingRow label={t("setting.system.server-name")} description={instanceGeneralSetting.customProfile?.title || "Memos"}>
+        <SettingRow label={t("setting.system.server-name")} description={instanceGeneralSetting.customProfile?.title || "Doze"}>
           <Button variant="outline" onClick={customizeDialog.open}>
             {t("common.edit")}
           </Button>

@@ -53,7 +53,7 @@ const App = () => {
 
     document.title = instanceGeneralSetting.customProfile.title;
     const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-    link.href = instanceGeneralSetting.customProfile.logoUrl || "/logo.webp";
+    link.href = instanceGeneralSetting.customProfile.logoUrl || "/logo.png";
   }, [instanceGeneralSetting.customProfile]);
 
   return (

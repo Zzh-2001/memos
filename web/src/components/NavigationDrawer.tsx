@@ -10,8 +10,8 @@ const NavigationDrawer = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const { generalSetting } = useInstance();
-  const title = generalSetting.customProfile?.title || "Memos";
-  const avatarUrl = generalSetting.customProfile?.logoUrl || "/full-logo.webp";
+  const title = generalSetting.customProfile?.title || "Doze";
+  const avatarUrl = generalSetting.customProfile?.logoUrl || "/logo.png";
 
   useEffect(() => {
     setOpen(false);

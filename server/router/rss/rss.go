@@ -414,7 +414,7 @@ func getRSSHeading(ctx context.Context, stores *store.Store) (RSSHeading, error)
 	}
 	if settings == nil || settings.CustomProfile == nil {
 		return RSSHeading{
-			Title:       "Memos",
+			Title:       "Doze",
 			Description: "An open source, lightweight note-taking service. Easily capture and share your great thoughts.",
 			Language:    "en-us",
 		}, nil

@@ -42,7 +42,7 @@ func NewMCPService(profile *profile.Profile, store *store.Store, secret string, 
 }
 
 func (s *MCPService) RegisterRoutes(echoServer *echo.Echo) {
-	mcpSrv := mcpserver.NewMCPServer("Memos", "1.0.0",
+	mcpSrv := mcpserver.NewMCPServer("Doze", "1.0.0",
 		mcpserver.WithToolCapabilities(true),
 		mcpserver.WithResourceCapabilities(true, true),
 		mcpserver.WithPromptCapabilities(true),

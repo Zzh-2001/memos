@@ -1,10 +1,9 @@
-import { CirclePauseIcon, CirclePlayIcon, LoaderIcon, PauseIcon, PlayIcon, TrashIcon, XIcon } from "lucide-react";
+import { CirclePauseIcon, CirclePlayIcon, EyeIcon, EyeOffIcon, LoaderIcon, PauseIcon, PlayIcon, TrashIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { getAccessToken } from "@/auth-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import SettingGroup from "./SettingGroup";
@@ -45,11 +44,9 @@ interface ReceiverConfig {
   log: string;
   debug: boolean;
   memos_url: string;
-  pat_set: boolean;
-  pat_hint: string;
+  pat: string;
   ai_base_url: string;
-  ai_api_key_set: boolean;
-  ai_api_key_hint: string;
+  ai_api_key: string;
   ai_model: string;
   ai_system_prompt: string;
   ai_max_tokens: number;
@@ -99,8 +96,8 @@ const DEFAULT_FORM: FormState = {
 const WebhookReceiverSection = () => {
   const [form, setForm] = useState<FormState>({ ...DEFAULT_FORM });
   const [original, setOriginal] = useState<FormState>({ ...DEFAULT_FORM });
-  const [patHint, setPatHint] = useState("");
-  const [apiKeyHint, setApiKeyHint] = useState("");
+  const [showPat, setShowPat] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
   const [status, setStatus] = useState<ReceiverStatus>({ running: false });
   const [saving, setSaving] = useState(false);
   const [toggling, setToggling] = useState(false);
@@ -120,9 +117,9 @@ const WebhookReceiverSection = () => {
         log: cfg.log,
         debug: cfg.debug,
         memos_url: cfg.memos_url,
-        pat: "",
+        pat: cfg.pat,
         ai_base_url: cfg.ai_base_url,
-        ai_api_key: "",
+        ai_api_key: cfg.ai_api_key,
         ai_model: cfg.ai_model,
         ai_system_prompt: cfg.ai_system_prompt,
         ai_max_tokens: cfg.ai_max_tokens,
@@ -130,8 +127,6 @@ const WebhookReceiverSection = () => {
       };
       setForm(formState);
       setOriginal(formState);
-      setPatHint(cfg.pat_hint);
-      setApiKeyHint(cfg.ai_api_key_hint);
     } catch {
       // silently ignore
     }
@@ -239,9 +234,6 @@ const WebhookReceiverSection = () => {
           body[key] = form[key];
         }
       }
-      // Always send sensitive fields (empty = keep existing).
-      body.pat = form.pat;
-      body.ai_api_key = form.ai_api_key;
 
       await apiFetch(`${API_BASE}/config`, {
         method: "PUT",
@@ -329,14 +321,19 @@ const WebhookReceiverSection = () => {
             onChange={(e) => updateField("memos_url", e.target.value)}
           />
         </SettingRow>
-        <SettingRow label="Personal Access Token" description={patHint ? `当前: ${patHint}` : "未设置"}>
-          <Input
-            type="password"
-            className="w-64"
-            placeholder={patHint ? "留空保持不变" : "memos_pat_..."}
-            value={form.pat}
-            onChange={(e) => updateField("pat", e.target.value)}
-          />
+        <SettingRow label="Personal Access Token" description="Memos 的访问令牌">
+          <div className="flex items-center gap-1">
+            <Input
+              type={showPat ? "text" : "password"}
+              className="w-64"
+              placeholder="memos_pat_..."
+              value={form.pat}
+              onChange={(e) => updateField("pat", e.target.value)}
+            />
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={() => setShowPat(!showPat)}>
+              {showPat ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+            </Button>
+          </div>
         </SettingRow>
         <SettingRow label="HMAC 签名密钥" description="可选，留空不校验">
           <Input
@@ -369,14 +366,19 @@ const WebhookReceiverSection = () => {
             onChange={(e) => updateField("ai_base_url", e.target.value)}
           />
         </SettingRow>
-        <SettingRow label="API Key" description={apiKeyHint ? `当前: ${apiKeyHint}` : "未设置"}>
-          <Input
-            type="password"
-            className="w-64"
-            placeholder={apiKeyHint ? "留空保持不变" : "sk-..."}
-            value={form.ai_api_key}
-            onChange={(e) => updateField("ai_api_key", e.target.value)}
-          />
+        <SettingRow label="API Key" description="AI 服务的 API 密钥">
+          <div className="flex items-center gap-1">
+            <Input
+              type={showApiKey ? "text" : "password"}
+              className="w-64"
+              placeholder="sk-..."
+              value={form.ai_api_key}
+              onChange={(e) => updateField("ai_api_key", e.target.value)}
+            />
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={() => setShowApiKey(!showApiKey)}>
+              {showApiKey ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+            </Button>
+          </div>
         </SettingRow>
         <SettingRow label="模型名称">
           <Input

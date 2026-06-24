@@ -20,7 +20,7 @@ func TestConfigValidation(t *testing.T) {
 				SMTPUsername: "user@example.com",
 				SMTPPassword: "password",
 				FromEmail:    "noreply@example.com",
-				FromName:     "Memos",
+				FromName:     "Doze",
 			},
 			wantErr: false,
 		},

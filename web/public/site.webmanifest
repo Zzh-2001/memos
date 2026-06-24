@@ -1,6 +1,6 @@
 {
-  "name": "Memos",
-  "short_name": "Memos",
+  "name": "Doze",
+  "short_name": "Doze",
   "description": "An open-source, self-hosted note-taking tool. Capture thoughts instantly. Own them completely.",
   "icons": [
     { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
