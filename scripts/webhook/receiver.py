@@ -165,6 +165,14 @@ def load_config(args: argparse.Namespace) -> dict[str, Any]:
 # AI 回复
 # ──────────────────────────────────────────────
 
+def _request_error_str(e: Exception) -> str:
+    """将 urllib 请求异常格式化为简短的错误描述字符串"""
+    if isinstance(e, urllib.error.HTTPError):
+        body = e.read().decode("utf-8", errors="replace")[:200]
+        return f"status={e.code}, body={body}"
+    return str(e)
+
+
 def _download_attachment_image(attachment: dict[str, Any]) -> bytes | None:
     """从 memos 下载图片附件的二进制数据，非图片类型返回 None"""
     att_type = attachment.get("type", "")
@@ -191,7 +199,7 @@ def _download_attachment_image(attachment: dict[str, Any]) -> bytes | None:
                 return resp.read()
             logging.warning("下载附件失败: %s, status=%d", url, resp.status)
     except Exception as e:
-        logging.warning("下载附件失败: %s, error=%s", url, e)
+        logging.warning("下载附件失败: %s, %s", url, _request_error_str(e))
     return None
 
 
@@ -296,11 +304,8 @@ def call_ai_model(messages: list[dict[str, Any]]) -> str:
             else:
                 logging.warning("AI 返回空回复")
             return reply
-    except urllib.error.HTTPError as e:
-        err_body = e.read().decode("utf-8", errors="replace")
-        logging.warning("AI API 调用失败: status=%d, body=%s", e.code, err_body[:200])
     except Exception as e:
-        logging.warning("AI API 调用失败: %s", e)
+        logging.warning("AI API 调用失败: %s", _request_error_str(e))
     return ""
 
 
@@ -357,22 +362,13 @@ def post_comment(memo_name: str, visibility: str, content: str) -> None:
             resp_body = resp.read()
             if resp.status == 200:
                 logging.info("已为 %s 自动添加评论", memo_name)
-            else:
-                logging.warning(
-                    "评论创建失败: %s, status=%d, body=%s",
-                    memo_name,
-                    resp.status,
-                    resp_body.decode("utf-8", errors="replace"),
-                )
-    except urllib.error.HTTPError as e:
-        logging.warning(
-            "评论创建失败: %s, status=%d, body=%s",
-            memo_name,
-            e.code,
-            e.read().decode("utf-8", errors="replace"),
-        )
+                return
+            logging.warning(
+                "评论创建失败: %s, status=%d, body=%s",
+                memo_name, resp.status, resp_body.decode("utf-8", errors="replace"),
+            )
     except Exception as e:
-        logging.warning("评论创建失败: %s, error=%s", memo_name, e)
+        logging.warning("评论创建失败: %s, %s", memo_name, _request_error_str(e))
 
 
 # ──────────────────────────────────────────────
