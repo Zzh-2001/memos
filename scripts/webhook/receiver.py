@@ -621,9 +621,6 @@ def on_memo_created(payload: dict[str, Any]) -> None:
         enable_ai,
         memo.get("content", ""),
     )
-    # 示例：把公开 Memo 写入文件归档
-    if memo.get("visibility") == "PUBLIC":
-        _append_to_archive(memo)
 
     # 记录已知状态
     _record_last_known_memo(memo)
@@ -736,13 +733,6 @@ HANDLERS = {
 # ──────────────────────────────────────────────
 # 辅助函数
 # ──────────────────────────────────────────────
-
-def _append_to_archive(memo: dict[str, Any]) -> None:
-    """将公开 Memo 追加到 archive.jsonl 文件"""
-    archive_path = os.path.join(_script_dir(), "memo_archive.jsonl")
-    with open(archive_path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(memo, ensure_ascii=False) + "\n")
-    logging.debug("已归档 memo uid=%s 到 %s", memo.get("uid"), archive_path)
 
 
 def verify_signature(secret: str, body: bytes, sig_header: str) -> bool:
